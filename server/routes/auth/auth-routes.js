@@ -10,7 +10,7 @@ router.post("/register",registerUser);
 router.post("/login",login);
 
 // Logout 
-router.post("/logout",logout);
+router.post("/logout",authMiddleware,logout);
 
 // MiddleWare 
 router.get("/check-auth",authMiddleware,(req,res)=>{

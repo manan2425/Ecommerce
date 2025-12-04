@@ -38,7 +38,7 @@ export const handleImageUpload = async (req, res) => {
 // Add a new product
 export const addProduct = async(req,res)=>{
     try{
-        const {image,title,description,category,brand,price,salePrice,totalStock, parts } = req.body;
+        const {image,title,description,category,brand,price,salePrice,totalStock, parts, redThreshold, yellowThreshold } = req.body;
         console.log("Request Body :",req.body)
         if(image==="" || title==="" || description==="" || category==="" || brand===""){
             
@@ -58,6 +58,16 @@ export const addProduct = async(req,res)=>{
                 success: false,
             });
         }
+        // Validate threshold values
+        else if (
+            (redThreshold && (isNaN(Number(redThreshold)) || Number(redThreshold) < 0)) ||
+            (yellowThreshold && (isNaN(Number(yellowThreshold)) || Number(yellowThreshold) < 0))
+        ) {
+            return res.status(400).json({
+                message: "Invalid threshold values: thresholds must be non-negative numbers.",
+                success: false,
+            });
+        }
         else{
             // If parts is a JSON string (coming from a form), parse it
             let parsedParts = [];
@@ -71,6 +81,8 @@ export const addProduct = async(req,res)=>{
 
             const newProduct = new Product({
                 image, title, description, category, brand, price, salePrice, totalStock,
+                redThreshold: redThreshold ? Number(redThreshold) : 5,
+                yellowThreshold: yellowThreshold ? Number(yellowThreshold) : 20,
                 parts: parsedParts
             });
             const data = await newProduct.save();
@@ -111,7 +123,7 @@ export const fetchAllProducts = async(req,res)=>{
 export const editProduct = async (req, res) => {
     try {
         const { id } = req.params; // Get the product ID from URL parameters
-        const { image, title, description, category, brand, price, salePrice, totalStock, parts } = req.body;
+        const { image, title, description, category, brand, price, salePrice, totalStock, parts, redThreshold, yellowThreshold } = req.body;
 
         // Check if ID is provided
         if (!id) {
@@ -141,6 +153,17 @@ export const editProduct = async (req, res) => {
             });
         }
 
+        // Validate threshold values
+        if (
+            (redThreshold && (isNaN(Number(redThreshold)) || Number(redThreshold) < 0)) ||
+            (yellowThreshold && (isNaN(Number(yellowThreshold)) || Number(yellowThreshold) < 0))
+        ) {
+            return res.status(400).json({
+                message: "Invalid threshold values: thresholds must be non-negative numbers.",
+                success: false,
+            });
+        }
+
         // Find the product by ID
         const findProduct = await Product.findById(id);
 
@@ -160,6 +183,8 @@ export const editProduct = async (req, res) => {
         findProduct.price = Number(price) || findProduct.price;
         findProduct.salePrice = Number(salePrice) || findProduct.salePrice;
         findProduct.totalStock = Number(totalStock) || findProduct.totalStock;
+        findProduct.redThreshold = redThreshold ? Number(redThreshold) : findProduct.redThreshold;
+        findProduct.yellowThreshold = yellowThreshold ? Number(yellowThreshold) : findProduct.yellowThreshold;
 
         if (parts !== undefined) {
             // accept JSON string or array

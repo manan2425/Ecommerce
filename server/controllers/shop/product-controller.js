@@ -4,7 +4,7 @@ import Product from "../../models/Product.js";
 export const getFilteredProducts = async(req,res)=>{
     try{
 
-        const {category = [],brand = [],sortBy = "price-lowtohigh"} = req.query;
+        const {category = [],brand = [],sortBy = "price-lowtohigh", keyword = ""} = req.query;
         let filters = {};
         if(category.length > 0){
             filters.category = {$in : category.split(",")};

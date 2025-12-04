@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../../models/User.js";
+import UserActivity from "../../models/UserActivity.js";
 
 
 // Secret Key
@@ -85,6 +86,20 @@ export const login = async(req,res)=>{
                     userName : checkUser.userName
                 },secretKey,{expiresIn : "60m"});
 
+                // Log the login activity
+                try {
+                    const activity = new UserActivity({
+                        userId: checkUser._id,
+                        activityType: 'login',
+                        ipAddress: req.ip || req.connection.remoteAddress,
+                        userAgent: req.headers['user-agent']
+                    });
+                    await activity.save();
+                } catch (activityError) {
+                    console.log('Error logging login activity:', activityError);
+                    // Don't fail the login if activity logging fails
+                }
+
                 res.cookie("token", token,{httpOnly:true,secure:false}).status(200).json({
                     success : true,
                     message : "Login Successfully",
@@ -121,6 +136,22 @@ export const login = async(req,res)=>{
 // Logout
 export const logout = async(req,res)=>{
     try{
+        // Log the logout activity if user is authenticated
+        if (req.user && req.user._id) {
+            try {
+                const activity = new UserActivity({
+                    userId: req.user._id,
+                    activityType: 'logout',
+                    ipAddress: req.ip || req.connection.remoteAddress,
+                    userAgent: req.headers['user-agent']
+                });
+                await activity.save();
+            } catch (activityError) {
+                console.log('Error logging logout activity:', activityError);
+                // Don't fail the logout if activity logging fails
+            }
+        }
+
         console.log("Here Error");
         res.clearCookie("token").json({
             success : true,

@@ -8,11 +8,14 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authRouter from "./routes/auth/auth-routes.js";
 import adminProductsRouter from "./routes/admin/products-routes.js"
+import adminCategoryRouter from "./routes/admin/category-routes.js";
+import adminAnalyticsRouter from "./routes/admin/analytics-routes.js";
 import shopProductsRouter from "./routes/shop/product-routes.js";
 import shopCartRouter from "./routes/shop/cart-routes.js";
 import shopAddressRouter from "./routes/shop/address-routes.js"; 
 import shopOrderRouter from "./routes/shop/order-routes.js"; 
-import shopReviewRouter from "./routes/shop/review-routes.js"; 
+import shopReviewRouter from "./routes/shop/review-routes.js";
+import shopCategoryRouter from "./routes/shop/category-routes.js";
 
 const app = express();
 
@@ -66,6 +69,12 @@ app.use("/api/auth/",authRouter);
 // For  Admin Products Handling
 app.use("/api/admin/products",adminProductsRouter);
 
+// For Admin Categories Handling
+app.use("/api/admin/categories",adminCategoryRouter);
+
+// For Admin Analytics Handling
+app.use("/api/admin/analytics",adminAnalyticsRouter);
+
 // For Getting The Products
 app.use("/api/shop/products",shopProductsRouter);
 
@@ -78,6 +87,9 @@ app.use("/api/shop/address",shopAddressRouter);
 // For Order Routes
 app.use("/api/shop/order",shopOrderRouter);
 app.use("/api/shop/review",shopReviewRouter);
+
+// For Shop Categories
+app.use("/api/shop/categories",shopCategoryRouter);
 
 // Data Base Connection (optional, only if MONGODB_URL is provided)
 const DataBaseConnection = async () => {
