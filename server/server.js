@@ -39,14 +39,42 @@ app.get("/", (req, res) => {
 
 // ✅ FIXED CORS (IMPORTANT 🔥)
 app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      'http://localhost:5173', // Development
+      'http://localhost:3000', // Alternative dev port
+      process.env.CLIENT_BASE_URL, // Production frontend URL
+      /\.vercel\.app$/, // Allow all Vercel domains
+    ].filter(Boolean); // Remove undefined values
+
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return origin === allowedOrigin;
+      } else if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
     "Content-Type",
     "Authorization",
     "Cache-Control",
     "Expires",
-    "Pragma"
+    "Pragma",
+    "X-Requested-With"
   ],
   credentials: true
 }));

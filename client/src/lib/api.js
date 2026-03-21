@@ -1,8 +1,22 @@
 import axios from 'axios';
 
+// Get API URL from environment variables
+const getApiUrl = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  if (apiUrl) {
+    // Remove trailing slash if present
+    return apiUrl.replace(/\/$/, '');
+  }
+
+  // Fallback for development
+  return 'http://localhost:5001';
+};
+
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api`,
+  baseURL: `${getApiUrl()}/api`,
   withCredentials: true,
+  timeout: 10000, // 10 second timeout
 });
 
 // Response interceptor to handle 401 (Unauthorized) errors
