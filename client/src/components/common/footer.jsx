@@ -14,8 +14,8 @@ function Footer({ simplified = false }) {
                         <div className="text-gray-400 text-sm mt-3 space-y-1">
                             <p>Plot 59, Shop 6, Aarogyajyoti Pharmacy</p>
                             <p>GIDC, V.U. Nagar, Anand - 388121</p>
-                            <p>📞 Rushil Sevak: +91 78743 93297</p>
-                            <p>📞 Anish Sharma: +91 89882 99522</p>
+                            <p>📞 Hasmukh Sevak (Proprietor): +91 94276 17936</p>
+                            <p>📞 Technical Director: +91 75747 97654</p>
                             <p>✉️ mtronapp@gmail.com</p>
                             <p className="text-xs mt-2">GST: 24AHLPS6771N1ZH</p>
                         </div>
