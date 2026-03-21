@@ -63,6 +63,14 @@ export default function ProductTile({ product, onEdit, onOpenBuilder, onPartsSav
                         alt={product?.title} 
                         className='w-full h-[300px] object-cover rounded-t-lg'
                     />
+                    {/* Visibility Status Badge */}
+                    <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                        product?.isActive 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-red-500 text-white'
+                    }`}>
+                        {product?.isActive ? 'Active' : 'Inactive'}
+                    </div>
                 </div>
                 <CardContent>
                     <h2 className='text-xl font-bold my-2'>

@@ -68,6 +68,8 @@ const ProductSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     salePrice: { type: Number, required: true },
     totalStock: { type: Number, required: true },
+    // Product visibility control
+    isActive: { type: Boolean, default: true },
     // Stock threshold configuration for color coding
     // Red threshold: stock <= redThreshold
     // Yellow threshold: stock <= yellowThreshold (but > redThreshold)

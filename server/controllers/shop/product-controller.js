@@ -53,6 +53,7 @@ export const searchProducts = async (req, res) => {
         
         // First, try exact/partial match
         let products = await Product.find({
+            isActive: true,
             $or: [
                 { title: searchRegex },
                 { description: searchRegex },
@@ -65,7 +66,7 @@ export const searchProducts = async (req, res) => {
         let suggestions = [];
         if (products.length === 0) {
             // Get all products and find similar ones
-            const allProducts = await Product.find({}).select('title description category brand price salePrice image');
+            const allProducts = await Product.find({ isActive: true }).select('title description category brand price salePrice image');
             
             const scoredProducts = allProducts.map(product => {
                 // Calculate similarity scores
@@ -145,6 +146,7 @@ export const getSearchSuggestions = async (req, res) => {
         
         // Get matching products
         const products = await Product.find({
+            isActive: true,
             $or: [
                 { title: searchRegex },
                 { category: searchRegex },
@@ -182,7 +184,7 @@ export const getFilteredProducts = async(req,res)=>{
     try{
 
         const {category = [],brand = [],sortBy = "price-lowtohigh", keyword = ""} = req.query;
-        let filters = {};
+        let filters = { isActive: true };
         if(category.length > 0){
             filters.category = {$in : category.split(",")};
         } 
@@ -248,7 +250,7 @@ export const getProductDetails = async(req,res)=>{
 
         const {id} = req.params;
         const product = await Product.findById(id);
-        if(!product){
+        if(!product || !product.isActive){
             return res.status(404).json({
                 success : false,
                 message : "Product not found"

@@ -41,6 +41,7 @@ export default function ProductModal({
     totalStock: '',
     redThreshold: '',
     yellowThreshold: '',
+    isActive: true,
     customFields: [],
     parts: []
   });
@@ -89,6 +90,7 @@ export default function ProductModal({
         totalStock: product.totalStock || '',
         redThreshold: product.redThreshold || '',
         yellowThreshold: product.yellowThreshold || '',
+        isActive: product.isActive !== undefined ? product.isActive : true,
         customFields: product.customFields || [],
         options: product.options || [],
         variants: product.variants || [],
@@ -118,6 +120,7 @@ export default function ProductModal({
       totalStock: '',
       redThreshold: '',
       yellowThreshold: '',
+      isActive: true,
       customFields: [],
       options: [],
       variants: [],
@@ -816,6 +819,18 @@ export default function ProductModal({
                     onChange={(e) => setFormData(prev => ({ ...prev, yellowThreshold: e.target.value }))}
                     placeholder="Medium stock alert"
                   />
+                </div>
+
+                {/* Product Visibility */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
+                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                  />
+                  <Label htmlFor="isActive" className="text-sm font-medium">Product is Active (Visible to customers)</Label>
                 </div>
 
                 {/* Custom Fields Section */}

@@ -161,7 +161,7 @@ export const fetchAllProducts = async(req,res)=>{
 export const editProduct = async (req, res) => {
     try {
         const { id } = req.params; // Get the product ID from URL parameters
-        const { image, title, description, descriptionPdf, category, brand, price, salePrice, totalStock, parts, redThreshold, yellowThreshold, customFields, options, variants } = req.body;
+        const { image, title, description, descriptionPdf, category, brand, price, salePrice, totalStock, parts, redThreshold, yellowThreshold, customFields, options, variants, isActive } = req.body;
 
         // Check if ID is provided
         if (!id) {
@@ -224,6 +224,7 @@ export const editProduct = async (req, res) => {
         findProduct.totalStock = Number(totalStock) || findProduct.totalStock;
         findProduct.redThreshold = redThreshold ? Number(redThreshold) : findProduct.redThreshold;
         findProduct.yellowThreshold = yellowThreshold ? Number(yellowThreshold) : findProduct.yellowThreshold;
+        findProduct.isActive = isActive !== undefined ? isActive : findProduct.isActive;
 
         if (parts !== undefined) {
             // accept JSON string or array
