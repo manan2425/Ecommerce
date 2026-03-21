@@ -2,8 +2,8 @@ import { loginUser } from "@/store/auth-slice";
 import CommonForm from "../../components/common/form";
 import { loginFormControls } from "@/config";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { logUserLogin } from "@/lib/activityTracker";
 
@@ -16,6 +16,8 @@ export default function AuthLogin() {
   }
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
 
   const onSubmit = async (e) => {
     try {
@@ -31,6 +33,12 @@ export default function AuthLogin() {
           toast({
             title: data?.payload?.message,
           })
+          // Navigate based on user role
+          if (data.payload.user.role === "admin") {
+            navigate("/admin/dashboard");
+          } else {
+            navigate("/shop/home");
+          }
         }
         else {
 
