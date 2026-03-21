@@ -35,6 +35,9 @@ const httpServer = createServer(app);
 // CORS configuration
 // CORS configuration
 // Allow explicit client origin if provided, otherwise allow localhost dev ports.
+app.get("/", (req, res) => {
+  res.send("Backend is working 🚀");
+});
 app.use(
     cors({
         origin: function (origin, callback) {
