@@ -1,7 +1,4 @@
 import { Button } from "@/components/ui/button";
-import img1 from "../../assets/banner-1.webp";
-import img2 from "../../assets/banner-2.webp";
-import img3 from "../../assets/banner-3.webp";
 import { BabyIcon, BookHeart, ChevronLeftIcon, ChevronRightIcon, FootprintsIcon, ShirtIcon, WatchIcon, Package } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
@@ -41,7 +38,6 @@ export default function ShopHome() {
 
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
-  const slides = [img1, img2, img3];
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -75,8 +71,6 @@ export default function ShopHome() {
 
   // For Slides
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Removed auto-timer - manual controls only to prevent unnecessary re-renders
 
 
 
@@ -190,37 +184,15 @@ export default function ShopHome() {
   return (
     <div className="flex flex-col min-h-screen">
 
-      {/* Carousel */}
-      <div className="relative w-full h-[600px] overflow-hidden">
-        {
-          slides.map((slide, index) => {
-            return (
-              <img src={slide} alt="" key={index}
-                className={`${index === currentSlide ? "opacity-100" : "opacity-0"}  absolute top-0 left-0 w-full h-full lg:object-cover md:object-cover  object-cover transition-opacity duration-[1000]`}
-              />
-            )
-          })
-        }
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-12 pb-24">
-          <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">Welcome to E-Commerce</h1>
-          <p className="text-xl text-white mb-8 drop-shadow-md max-w-lg">Discover the latest trends in fashion, accessories, and more. Shop now and elevate your style.</p>
-          <Button className="w-fit text-lg px-8 py-6 rounded-full shadow-xl hover:scale-105 transition-transform" onClick={() => navigate("/shop/listing")}>
+      {/* White Background Banner */}
+      <div className="relative w-full h-[400px] bg-white flex items-center justify-center">
+        <div className="text-center px-4">
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">Welcome to E-Commerce</h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto">Discover the latest trends in fashion, accessories, and more. Shop now and elevate your style.</p>
+          <Button className="text-lg px-8 py-6 rounded-full shadow-xl hover:scale-105 transition-transform" onClick={() => navigate("/shop/listing")}>
             Shop Now
           </Button>
         </div>
-
-        <Button variant="outline" className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 border-none text-white" size="icon" onClick={() => {
-          setCurrentSlide(prevSlide => (prevSlide - 1 + slides.length) % slides.length)
-        }}>
-          <ChevronLeftIcon className="w-6 h-6" />
-        </Button>
-
-        <Button variant="outline" className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 border-none text-white" size="icon" onClick={() => {
-          setCurrentSlide(prevSlide => (prevSlide + 1) % slides.length);
-        }}>
-          <ChevronRightIcon className="w-6 h-6" />
-        </Button>
-
       </div>
 
       {/* Section */}
