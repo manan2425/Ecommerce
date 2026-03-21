@@ -2,15 +2,21 @@ import { useDispatch } from "react-redux";
 import { Button } from "../ui/button";
 import { Menu,LogOut } from "lucide-react";
 import { logout } from "@/store/auth-slice";
+import { useNavigate } from "react-router-dom";
  
 export default function AdminHeader({setOpen}) {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const logoutUser = async()=>{
     try{
       const response = await dispatch(logout());
       console.log("Reponse Logout : ",response);
-
+      // Small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 100);
     }catch(error){
       console.log(error);
     }

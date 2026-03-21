@@ -4,8 +4,13 @@ export default function CheckAuth({isAuthenticated,user,children}) {
    
     const location = useLocation();
 
-    // Redirect to login if not authenticated (except for login/register pages)
-    if(!isAuthenticated && !(location.pathname.includes("/login")) && !(location.pathname.includes("/register"))) {
+    // Allow access to auth pages (login/register) regardless of authentication status
+    if(location.pathname.includes("/login") || location.pathname.includes("/register")) {
+        return children;
+    }
+
+    // Redirect to login if not authenticated
+    if(!isAuthenticated) {
         return <Navigate to="/auth/login" replace />
     }
 

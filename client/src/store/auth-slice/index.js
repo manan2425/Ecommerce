@@ -61,8 +61,11 @@ export const logout = createAsyncThunk("/auth/logout",async(formData)=>{
         const response = await api.post(`/auth/logout`,{},{
             withCredentials : true,
         });
-        console.log("Logout User : ",response.data);
-        return response.data;
+        console.log("Logout User : ",response.data);        
+        // Clear local storage immediately after successful logout
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('auth');
+                return response.data;
 
     }catch(error){
         console.log("Error In Login : " + error );

@@ -26,9 +26,10 @@ api.interceptors.response.use(
     // If 401 Unauthorized, redirect to login
     if (error?.response?.status === 401) {
       const isCheckAuth = error.config?.url?.includes('/auth/check-auth');
+      const isLogout = error.config?.url?.includes('/auth/logout');
       const isAuthPage = window.location.pathname.includes('/auth/login') || window.location.pathname.includes('/auth/register');
 
-      if (!isCheckAuth && !isAuthPage) {
+      if (!isCheckAuth && !isLogout && !isAuthPage) {
         // Clear any stored auth data
         localStorage.removeItem('token');
         sessionStorage.removeItem('auth');

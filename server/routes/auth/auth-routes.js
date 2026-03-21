@@ -9,6 +9,17 @@ router.post("/register",registerUser);
 // For Login User
 router.post("/login",login);
 
+// GET route for testing (optional - remove in production)
+router.get("/login", (req, res) => {
+  res.json({
+    message: "Login endpoint - Use POST method with email and password in request body",
+    example: {
+      email: "user@example.com",
+      password: "yourpassword"
+    }
+  });
+});
+
 // Logout 
 router.post("/logout",authMiddleware,logout);
 

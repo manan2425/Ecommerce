@@ -146,6 +146,10 @@ const HeaderRightContent = () => {
       // Log logout activity before dispatching logout
       await logUserLogout();
       const reponse = await dispatch(logout());
+      // Small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 100);
     } catch (error) {
       console.log(error);
     }
