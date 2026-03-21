@@ -16,6 +16,7 @@ import ProductModal from "@/components/admin/product-modal";
 import VisualProductBuilder from "@/components/admin/visual-product-builder";
 import api from '@/lib/api';
 import { Plus, Layers } from 'lucide-react';
+import { subscribeToProductUpdates, initSocket } from '@/lib/socket';
 
 export default function AdminProducts() {
   
@@ -44,6 +45,16 @@ export default function AdminProducts() {
     }
     fetchProducts();
   },[dispatch]);
+
+  // Real-time product updates
+  useEffect(() => {
+    initSocket();
+    const unsubscribe = subscribeToProductUpdates((data) => {
+      console.log('🔄 Admin: Refreshing products due to update:', data);
+      dispatch(fetchAllProducts());
+    });
+    return () => unsubscribe();
+  }, [dispatch]);
 
   // Fetch categories
   useEffect(() => {

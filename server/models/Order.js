@@ -11,11 +11,33 @@ const OrderSchema  = new mongoose.Schema({
                 name: String,
                 nodeName: String,
                 description: String,
+                descriptionPdf: String,
                 price: Number,
+                salePrice: Number,
                 xPercent: Number,
                 yPercent: Number,
-                thumbnail: String
+                thumbnail: String,
+                partImage: String,
+                brand: String,
+                category: String,
+                customFields: [{
+                    label: String,
+                    value: String
+                }],
+                partPath: [Number],
+                parentName: String,
+                isSubpart: Boolean,
+                depth: Number
             },
+            // Selected variant info (e.g., Color: Red, Size: M)
+            selectedVariant: {
+                optionCombination: mongoose.Schema.Types.Mixed,
+                price: Number,
+                salePrice: Number,
+                sku: String
+            },
+            // Selected options for display (e.g., { "Color": "Red", "Size": "M" })
+            selectedOptions: mongoose.Schema.Types.Mixed,
             price : String,
             salePrice : String,
             quantity : Number
@@ -28,10 +50,14 @@ const OrderSchema  = new mongoose.Schema({
         pincode : String,
         phone : String,
         notes : String,
+        gstNumber : String,
+        wantsGstBill : Boolean,
     },
     orderStatus : String,
     paymentMethod : String,
     paymentStatus : String,
+    subtotal : Number,
+    gstAmount : Number,
     totalAmount : Number,
     orderDate : Date,
     orderUpdateDate : Date,

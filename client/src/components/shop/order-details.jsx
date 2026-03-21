@@ -71,13 +71,24 @@ export default function ShopOrdersView({ orderDetails }) {
                         </Label>
                     </div>
 
-                    <div className="flex items-center justify-between mt-1">
-                        <p className="font-medium">
-                            Order Price
-                        </p>
-                        <Label>
-                            {orderDetails?.totalAmount || ""}
-                        </Label>
+                    {/* Price Breakdown */}
+                    <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+                        <div className="flex items-center justify-between py-1">
+                            <p className="text-gray-600">Subtotal</p>
+                            <Label>${orderDetails?.subtotal?.toFixed(2) || orderDetails?.totalAmount || ""}</Label>
+                        </div>
+                        {orderDetails?.gstAmount > 0 && (
+                            <div className="flex items-center justify-between py-1">
+                                <p className="text-gray-600">GST (18%)</p>
+                                <Label className="text-orange-600">+ ${orderDetails?.gstAmount?.toFixed(2)}</Label>
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between py-1 pt-2 border-t mt-2">
+                            <p className="font-bold">Total Amount</p>
+                            <Label className="text-green-600 font-bold">
+                                ${orderDetails?.totalAmount?.toFixed(2) || ""}
+                            </Label>
+                        </div>
                     </div>
 
                     <Separator />
@@ -88,9 +99,47 @@ export default function ShopOrdersView({ orderDetails }) {
                         <ul className="grid gap-3">
                             {
                                 orderDetails && orderDetails.cartItems && orderDetails.cartItems.map((item, index) => (
-                                    <li className="flex items-center justify-between" key={index}>
-                                        <span>{item?.title || ""}</span>
-                                        <span>{item?.price * item?.quantity || ""}</span>
+                                    <li className="flex flex-col gap-1 p-3 bg-gray-50 rounded-lg" key={index}>
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-medium">{item?.title || ""}</span>
+                                            <span className="font-semibold">${(item?.price * item?.quantity) || ""}</span>
+                                        </div>
+                                        
+                                        {/* Show selected options (Color, Size, etc.) */}
+                                        {item?.selectedOptions && Object.keys(item.selectedOptions).length > 0 && (
+                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                {Object.entries(item.selectedOptions).map(([key, value]) => (
+                                                    <span key={key} className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                                                        {key}: {value}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        
+                                        {/* Show selected part info */}
+                                        {item?.selectedPart && (
+                                            <div className="text-sm text-muted-foreground mt-1">
+                                                {/* Show if it's a subpart */}
+                                                {item.selectedPart.isSubpart && item.selectedPart.parentName && (
+                                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded mr-2">
+                                                        Subpart of: {item.selectedPart.parentName}
+                                                    </span>
+                                                )}
+                                                <div>
+                                                    <strong>Part:</strong> {item.selectedPart.name}
+                                                    {item.selectedPart.price > 0 && ` · $${item.selectedPart.price}`}
+                                                    {item.selectedPart.depth > 0 && (
+                                                        <span className="text-xs text-gray-500 ml-1">
+                                                            (Level {item.selectedPart.depth + 1})
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="text-xs text-muted-foreground">
+                                            Qty: {item?.quantity}
+                                        </div>
                                     </li>
                                 ))
                             }
@@ -157,7 +206,7 @@ export default function ShopOrdersView({ orderDetails }) {
                     </div>
                 }
                 <div className='mt-4'>
-                    <Button onClick={() => generateInvoicePDF(orderDetails)} className="w-full">
+                    <Button onClick={async () => await generateInvoicePDF(orderDetails)} className="w-full">
                         Download Invoice
                     </Button>
                 </div>

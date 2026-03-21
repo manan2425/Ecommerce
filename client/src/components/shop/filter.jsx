@@ -1,4 +1,3 @@
-import { filterOptions } from '@/config'
 import React, { Fragment, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Label } from '../ui/label'
@@ -16,13 +15,12 @@ export default function ProductFilter({filters,handleFilter}) {
     dispatch(fetchShopCategories());
   }, [dispatch]);
 
-  // Build dynamic filter options - categories from DB, brands from config
+  // Build dynamic filter options - only categories from DB (brand filter removed for users)
   const dynamicFilterOptions = {
     category: categories.map(cat => ({
       id: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
       label: cat.name
-    })),
-    brand: filterOptions.brand || []
+    }))
   };
  
  

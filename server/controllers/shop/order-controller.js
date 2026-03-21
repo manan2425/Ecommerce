@@ -1,6 +1,8 @@
 import Order from "../../models/Order.js";
 import Product from "../../models/Product.js";
 import Cart from "../../models/Cart.js";
+import { emitEvent, SOCKET_EVENTS } from "../../helpers/socket.js";
+import { sendOrderNotification } from "../../helpers/emailService.js";
 
 export const createOrder = async(req,res)=>{
     try{
@@ -42,6 +44,15 @@ export const createOrder = async(req,res)=>{
 
         // Clear Cart after successful order
         await Cart.findOneAndDelete({ userId });
+
+        // Emit real-time event for order creation
+        emitEvent(SOCKET_EVENTS.ORDER_CREATED, { order: saveOrder });
+        emitEvent(SOCKET_EVENTS.REFRESH_ORDERS, { action: 'created', orderId: saveOrder._id });
+        // Also emit product refresh for stock updates
+        emitEvent(SOCKET_EVENTS.REFRESH_PRODUCTS, { action: 'stock_updated' });
+
+        // Send email notification to admin
+        sendOrderNotification(saveOrder).catch(err => console.log('Email notification failed:', err));
 
         return res.status(200).json({
             success : true,
@@ -171,6 +182,11 @@ export const updateOrderStatus = async(req,res)=>{
         }
 
         const updateOrder = await Order.findByIdAndUpdate(id,{orderStatus});
+        
+        // Emit real-time event for order status update
+        emitEvent(SOCKET_EVENTS.ORDER_UPDATED, { orderId: id, orderStatus });
+        emitEvent(SOCKET_EVENTS.REFRESH_ORDERS, { action: 'updated', orderId: id });
+        
         return res.status(200).json({
             success : true,
             message : 'Order Updated Successfuly'

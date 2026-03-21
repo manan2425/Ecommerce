@@ -162,18 +162,75 @@ export default function PartDetailsPage() {
         const part = getCurrentPart();
         if (!part) return;
 
+        // Build enriched part data with path info for nested subparts
+        // Remove subparts to avoid large nested data in cart
+        const indices = getPathIndices();
+        const parentPart = getParentPart();
+        const { subparts, ...partWithoutSubparts } = part;
+        
+        const enrichedPart = {
+            ...partWithoutSubparts,
+            partPath: indices,
+            parentName: parentPart?.name || null,
+            isSubpart: indices.length > 1,
+            depth: indices.length - 1
+        };
+
         dispatch(addToCart({
-            userId: user._id,
+            userId: user?.id,
             productId: productId,
             quantity: quantity,
-            partId: part._id,
-            partName: part.name,
-            partPrice: part.price
+            selectedPart: enrichedPart
         })).then(data => {
             if (data?.payload?.success) {
-                dispatch(fetchCartItems(user._id));
+                dispatch(fetchCartItems(user?.id));
                 toast({
                     title: `${part.name} added to cart`
+                });
+            } else {
+                toast({
+                    title: "Failed to add to cart",
+                    variant: "destructive"
+                });
+            }
+        });
+    };
+
+    // Add subpart to cart (from the subparts list)
+    const handleAddSubpartToCart = (subpart, subpartIndex) => {
+        if (!isAuthenticated) {
+            toast({
+                title: "Please login to add items to cart",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        // Build the full path to this subpart
+        // Remove subparts to avoid large nested data in cart
+        const currentIndices = getPathIndices();
+        const subpartPath = [...currentIndices, subpartIndex];
+        const currentPartData = getCurrentPart();
+        const { subparts, ...subpartWithoutNested } = subpart;
+        
+        const enrichedPart = {
+            ...subpartWithoutNested,
+            partPath: subpartPath,
+            parentName: currentPartData?.name || null,
+            isSubpart: true,
+            depth: subpartPath.length - 1
+        };
+
+        dispatch(addToCart({
+            userId: user?.id,
+            productId: productId,
+            quantity: 1,
+            selectedPart: enrichedPart
+        })).then(data => {
+            if (data?.payload?.success) {
+                dispatch(fetchCartItems(user?.id));
+                toast({
+                    title: `${subpart.name} added to cart`
                 });
             } else {
                 toast({
@@ -364,6 +421,33 @@ export default function PartDetailsPage() {
                                 </p>
                             )}
 
+                            {/* Explore Parts Button - shown prominently when current part has subparts */}
+                            {currentSubparts.length > 0 && (
+                                <div className="mb-6 p-4 bg-purple-900/30 border border-purple-500/30 rounded-xl">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-white font-semibold flex items-center gap-2">
+                                                <Package className="w-5 h-5 text-purple-400" />
+                                                This part contains {currentSubparts.length} sub-components
+                                            </h3>
+                                            <p className="text-gray-400 text-sm mt-1">
+                                                Click on the hotspots in the image or scroll down to explore
+                                            </p>
+                                        </div>
+                                        <Button
+                                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                                            onClick={() => {
+                                                // Scroll to subparts section
+                                                document.getElementById('subparts-section')?.scrollIntoView({ behavior: 'smooth' });
+                                            }}
+                                        >
+                                            <ZoomIn className="w-4 h-4 mr-2" />
+                                            Explore Parts
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="flex items-center justify-between mb-6">
                                 {currentPart.price > 0 && (
                                     <div className="text-4xl font-bold text-green-400">
@@ -419,8 +503,9 @@ export default function PartDetailsPage() {
 
                         {/* Subparts list */}
                         {currentSubparts.length > 0 && (
-                            <div className="bg-gray-800 rounded-xl p-6">
-                                <h3 className="text-xl font-semibold text-white mb-4">
+                            <div id="subparts-section" className="bg-gray-800 rounded-xl p-6">
+                                <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                                    <Package className="w-5 h-5 text-purple-400" />
                                     Sub-Components ({currentSubparts.length})
                                 </h3>
                                 <div className="space-y-3">
@@ -432,37 +517,92 @@ export default function PartDetailsPage() {
                                         return (
                                             <div
                                                 key={idx}
-                                                className="flex items-center gap-4 p-4 bg-gray-700/50 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
-                                                onClick={() => handleNavigateToSubpart(idx)}
+                                                className="p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors"
                                             >
-                                                {subpart.thumbnail && (
-                                                    <img
-                                                        src={subpart.thumbnail}
-                                                        alt={subpart.name}
-                                                        className="w-16 h-16 object-cover rounded-lg border border-gray-600"
-                                                    />
-                                                )}
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-white font-medium">
-                                                            {subpart.name || `Sub-part ${idx + 1}`}
-                                                        </span>
-                                                        {canDrillDown && (
-                                                            <ZoomIn className="w-4 h-4 text-purple-400" />
+                                                <div 
+                                                    className="flex items-center gap-4 cursor-pointer"
+                                                    onClick={() => handleNavigateToSubpart(idx)}
+                                                >
+                                                    {(subpart.thumbnail || subpart.partImage || subpart.image) && (
+                                                        <img
+                                                            src={subpart.thumbnail || subpart.partImage || subpart.image}
+                                                            alt={subpart.name}
+                                                            className="w-16 h-16 object-cover rounded-lg border border-gray-600"
+                                                        />
+                                                    )}
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-white font-medium">
+                                                                {subpart.name || `Sub-part ${idx + 1}`}
+                                                            </span>
+                                                            {canDrillDown && (
+                                                                <ZoomIn className="w-4 h-4 text-purple-400" />
+                                                            )}
+                                                        </div>
+                                                        {subpart.description && (
+                                                            <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                                                                {subpart.description}
+                                                            </p>
                                                         )}
                                                     </div>
-                                                    {subpart.description && (
-                                                        <p className="text-gray-400 text-sm mt-1 line-clamp-2">
-                                                            {subpart.description}
-                                                        </p>
+                                                    {subpart.price > 0 && (
+                                                        <div className="text-green-400 font-bold text-lg">
+                                                            ${subpart.price}
+                                                        </div>
                                                     )}
+                                                    <ChevronRight className="w-5 h-5 text-gray-500" />
                                                 </div>
-                                                {subpart.price > 0 && (
-                                                    <div className="text-green-400 font-bold text-lg">
-                                                        ${subpart.price}
+                                                
+                                                {/* Explore Subparts button - only shown if subpart has its own subparts */}
+                                                {hasSubparts && (
+                                                    <div className="mt-3 ml-20 flex items-center gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleNavigateToSubpart(idx);
+                                                            }}
+                                                        >
+                                                            <ZoomIn className="w-4 h-4 mr-2" />
+                                                            Explore {subpart.subparts.length} Subparts
+                                                        </Button>
+                                                        {subpart.price > 0 && (
+                                                            <Button
+                                                                size="sm"
+                                                                className="bg-green-600 hover:bg-green-700 text-white"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleAddSubpartToCart(subpart, idx);
+                                                                }}
+                                                            >
+                                                                <ShoppingCart className="w-4 h-4 mr-2" />
+                                                                Add to Cart
+                                                            </Button>
+                                                        )}
+                                                        <span className="ml-3 text-gray-500 text-sm">
+                                                            {subpart.subparts.slice(0, 3).map(s => s.name || 'Part').join(', ')}
+                                                            {subpart.subparts.length > 3 && ` +${subpart.subparts.length - 3} more`}
+                                                        </span>
                                                     </div>
                                                 )}
-                                                <ChevronRight className="w-5 h-5 text-gray-500" />
+                                                
+                                                {/* Add to Cart button for parts without subparts */}
+                                                {!hasSubparts && subpart.price > 0 && (
+                                                    <div className="mt-3 ml-20">
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-green-600 hover:bg-green-700 text-white"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleAddSubpartToCart(subpart, idx);
+                                                            }}
+                                                        >
+                                                            <ShoppingCart className="w-4 h-4 mr-2" />
+                                                            Add to Cart - ${subpart.price}
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}

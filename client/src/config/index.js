@@ -85,22 +85,49 @@ export const addProductFormElements = [
         label : "brand",
         placeholder : "Select Brand",
         componentType : "select",
+        // NOTE: Brands are now fetched dynamically from the database
+        // This static list is a fallback - the admin products page should fetch brands from API
         options : [
-            {
-                id : "nike",label : "Nike"
-            },
-            {
-                id : "addidas",label : "Addidas"
-            },
-            {
-                id : "puma",label : "Puma"
-            },
-            {
-                id : "zara", label : "Zara"    
-            },
-            {
-                id : "H&M", label : "H&M"
-            }
+            { id: "siemens", label: "Siemens" },
+            { id: "abb", label: "ABB" },
+            { id: "schneider-electric", label: "Schneider Electric" },
+            { id: "honeywell", label: "Honeywell" },
+            { id: "rockwell-automation", label: "Rockwell Automation" },
+            { id: "emerson", label: "Emerson" },
+            { id: "yokogawa", label: "Yokogawa" },
+            { id: "endresshauser", label: "Endress+Hauser" },
+            { id: "wika", label: "WIKA" },
+            { id: "pepperfuchs", label: "Pepperl+Fuchs" },
+            { id: "turck", label: "Turck" },
+            { id: "omron", label: "Omron" },
+            { id: "mitsubishi-electric", label: "Mitsubishi Electric" },
+            { id: "delta-electronics", label: "Delta Electronics" },
+            { id: "bosch-rexroth", label: "Bosch Rexroth" },
+            { id: "lt-electrical-automation", label: "L&T Electrical & Automation" },
+            { id: "phoenix-contact", label: "Phoenix Contact" },
+            { id: "weidmller", label: "Weidmüller" },
+            { id: "te-connectivity", label: "TE Connectivity" },
+            { id: "masibus", label: "Masibus" },
+            { id: "keyence", label: "Keyence" },
+            { id: "banner-engineering", label: "Banner Engineering" },
+            { id: "sick", label: "SICK" },
+            { id: "fuji-electric", label: "Fuji Electric" },
+            { id: "panasonic-industrial", label: "Panasonic Industrial" },
+            { id: "eaton", label: "Eaton" },
+            { id: "gic-india", label: "GIC India" },
+            { id: "harting", label: "HARTING" },
+            { id: "wago", label: "WAGO" },
+            { id: "murrelektronik", label: "Murrelektronik" },
+            { id: "festo", label: "Festo" },
+            { id: "parker-hannifin", label: "Parker Hannifin" },
+            { id: "jumo", label: "JUMO" },
+            { id: "multispan", label: "Multispan" },
+            { id: "autonics", label: "Autonics" },
+            { id: "danfoss", label: "Danfoss" },
+            { id: "lenze", label: "Lenze" },
+            { id: "sew-eurodrive", label: "SEW-EURODRIVE" },
+            { id: "ifm-electronic", label: "ifm electronic" },
+            { id: "beckhoff", label: "Beckhoff" }
         ]
 
     },
@@ -176,6 +203,14 @@ export const addressFormControl = [
         name : "notes",
         componentType : "textarea",
         placeholder : "Enter any additional notes"
+    },
+    {
+        label : "GST Number (Optional - for GST Bill)",
+        name : "gstNumber",
+        componentType : "input",
+        type : "text",
+        placeholder : "Enter GST Number (e.g., 22AAAAA0000A1Z5)",
+        optional : true
     }
 ];
 
@@ -222,15 +257,50 @@ export const categoryOptionsMap = {
 }
 
 export const brandOptionsMap = {
-    nike : "Nike",
-    adidas : "Adidas",
-    puma : "Puma",
-    levi : "Levi",
-    zara : "Zara",
-    "h&m" : 'H&M'
+    "siemens": "Siemens",
+    "abb": "ABB",
+    "schneider-electric": "Schneider Electric",
+    "honeywell": "Honeywell",
+    "rockwell-automation": "Rockwell Automation",
+    "emerson": "Emerson",
+    "yokogawa": "Yokogawa",
+    "endresshauser": "Endress+Hauser",
+    "wika": "WIKA",
+    "pepperfuchs": "Pepperl+Fuchs",
+    "turck": "Turck",
+    "omron": "Omron",
+    "mitsubishi-electric": "Mitsubishi Electric",
+    "delta-electronics": "Delta Electronics",
+    "bosch-rexroth": "Bosch Rexroth",
+    "lt-electrical-automation": "L&T Electrical & Automation",
+    "phoenix-contact": "Phoenix Contact",
+    "weidmller": "Weidmüller",
+    "te-connectivity": "TE Connectivity",
+    "masibus": "Masibus",
+    "keyence": "Keyence",
+    "banner-engineering": "Banner Engineering",
+    "sick": "SICK",
+    "fuji-electric": "Fuji Electric",
+    "panasonic-industrial": "Panasonic Industrial",
+    "eaton": "Eaton",
+    "gic-india": "GIC India",
+    "harting": "HARTING",
+    "wago": "WAGO",
+    "murrelektronik": "Murrelektronik",
+    "festo": "Festo",
+    "parker-hannifin": "Parker Hannifin",
+    "jumo": "JUMO",
+    "multispan": "Multispan",
+    "autonics": "Autonics",
+    "danfoss": "Danfoss",
+    "lenze": "Lenze",
+    "sew-eurodrive": "SEW-EURODRIVE",
+    "ifm-electronic": "ifm electronic",
+    "beckhoff": "Beckhoff"
 }
 
-// Filter Options
+// Filter Options - Categories are fetched dynamically from DB
+// Brand filter removed from user side (admin can still manage brands for products)
 export const filterOptions = {
     category : [
         {id : "men", label : "Men"},
@@ -238,15 +308,8 @@ export const filterOptions = {
         {id : "kids", label : "Kids"},
         {id : "accessories", label : "Accessories"},
         {id : "footwear", label : "Footwear"}
-    ],
-    brand : [
-        {id : "nike", label : "Nike"},
-        {id : "adidas", label : "Adidas"},
-        {id : "puma", label : "Puma"},
-        {id : "levi", label : "Levi"},
-        {id : "zara", label : "Zara"},
-        {id : "h&m", label : "H&M"}
-    ]   
+    ]
+    // brand filter removed - users filter by category only
 }
 
 // For sort Options

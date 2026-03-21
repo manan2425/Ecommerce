@@ -1,7 +1,7 @@
 
-import {ChartNoAxesCombined} from "lucide-react"
+import {ChartNoAxesCombined, Building2, MessageCircle} from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import {LayoutDashboard,ShoppingBasket,Truck,TagsIcon,Activity} from "lucide-react";
+import {LayoutDashboard,ShoppingBasket,Truck,TagsIcon,Activity,Wrench,Users,MessageSquare} from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 
 
@@ -27,10 +27,40 @@ const menuItems = [
       icons : <TagsIcon />
   },
   {
+      id : "brands",
+      label : "Brands",
+      path : "/admin/brands",
+      icons : <Building2 />
+  },
+  {
+      id : "services",
+      label : "Services",
+      path : "/admin/services",
+      icons : <Wrench />
+  },
+  {
+      id : "service-inquiries",
+      label : "Service Inquiries",
+      path : "/admin/service-inquiries",
+      icons : <MessageCircle />
+  },
+  {
       id : "orders",
       label : "Orders",
       path : "/admin/orders",
       icons : <Truck />
+  },
+  {
+      id : "users",
+      label : "Users",
+      path : "/admin/users",
+      icons : <Users />
+  },
+  {
+      id : "contacts",
+      label : "Contact Messages",
+      path : "/admin/contacts",
+      icons : <MessageSquare />
   },
   {
       id : "user-activities",
@@ -72,8 +102,8 @@ export default function AdminSidebar({open,setOpen}) {
         <SheetContent side="left" className="w-64">
           <div className="flex flex-col h-full">
             <SheetHeader className="border-b">
-              <SheetTitle className="flex gap-2 mt-5 mb-5">
-                <ChartNoAxesCombined size={30} />
+              <SheetTitle className="flex gap-2 mt-5 mb-5 items-center">
+                <img src="/company_logo.png" alt="Company Logo" className="h-10 w-auto object-contain" />
                 <span>
                   Admin Panel
                 </span>
@@ -86,7 +116,7 @@ export default function AdminSidebar({open,setOpen}) {
       </Sheet>
       <aside className="hidden w-64 flex-col border-r bg-background p-6 lg:flex ">
         <div className="flex items-center gap-2 cursor-pointer" onClick={()=>navigate("/admin/dashboard")} >
-          <ChartNoAxesCombined size={30} />
+          <img src="/company_logo.png" alt="Company Logo" className="h-10 w-auto object-contain" />
           <h1 className="text-xl font-extrabold">Admin Panel</h1>
         </div>
           <MenuItems/>

@@ -172,7 +172,7 @@ export const initializeContentProtection = () => {
   `;
   document.head.appendChild(style);
 
-  // 10. Prevent screenshot detection (visual watermark)
+  // 10. Screenshot prevention - blur content when not focused
   // Add a hidden element that only appears in screenshots
   const watermark = document.createElement('div');
   watermark.style.cssText = `
@@ -180,16 +180,20 @@ export const initializeContentProtection = () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 72px;
-    opacity: 0.3;
+    font-size: 24px;
+    opacity: 0.8;
     pointer-events: none;
     z-index: 9999;
     font-weight: bold;
-    color: red;
+    color: #dc2626;
     text-align: center;
     display: none;
+    background: rgba(255,255,255,0.95);
+    padding: 20px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   `;
-  watermark.textContent = 'SCREENSHOT DETECTED';
+  watermark.textContent = '🚫 Screenshot not allowed';
   document.body.appendChild(watermark);
 
   // Show watermark when screenshot is detected
@@ -197,7 +201,7 @@ export const initializeContentProtection = () => {
     watermark.style.display = 'block';
     setTimeout(() => {
       watermark.style.display = 'none';
-    }, 2000);
+    }, 1500);
   };
 
   // Try to detect screenshot via visibility change

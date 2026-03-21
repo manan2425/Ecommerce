@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { logUserLogin } from "@/lib/activityTracker";
 
 export default function AuthLogin() {
 
@@ -25,6 +26,8 @@ export default function AuthLogin() {
         console.log("Data for login :", data);
 
         if (data?.payload?.success === true) {
+          // Log user login activity
+          logUserLogin();
           toast({
             title: data?.payload?.message,
           })

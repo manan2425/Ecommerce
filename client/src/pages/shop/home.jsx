@@ -15,6 +15,8 @@ import { addToCart } from "@/store/shop/cart-slice";
 import { fetchShopCategories } from "@/store/shop/category-slice";
 import { useToast } from "@/hooks/use-toast";
 import ProductDetailsModal from "@/components/shop/product-details";
+import { logProductAddToCart } from "@/lib/activityTracker";
+import { useRealtimeProducts, useRealtimeCategories } from "@/hooks/use-realtime";
 
 // Default icon mapping for categories (fallback)
 const categoryIconMap = {
@@ -44,7 +46,9 @@ export default function ShopHome() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-
+  // Real-time updates - products and categories auto-refresh
+  useRealtimeProducts();
+  useRealtimeCategories();
 
   // Get User
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -95,7 +99,9 @@ export default function ShopHome() {
   // Add To Cart 
   // productId: string
   // selectedPart: optional object { name, nodeName, price, ... }
-  const handleAddToCart = async (productId, selectedPart = null) => {
+  // selectedVariant: optional variant object
+  // selectedOptions: optional object { "Color": "Red", "Size": "M" }
+  const handleAddToCart = async (productId, selectedPart = null, quantity = 1, selectedVariant = null, selectedOptions = null) => {
     if (!isAuthenticated) {
       toast({
         title: "Please login to add items to cart",
@@ -106,9 +112,18 @@ export default function ShopHome() {
     }
     try {
       console.log("Cart Products Id :  ", productId);
-      const response = await dispatch(addToCart({ userId: user?.id, productId, quantity: 1, selectedPart }));
+      const response = await dispatch(addToCart({ 
+        userId: user?.id, 
+        productId, 
+        quantity: quantity || 1, 
+        selectedPart,
+        selectedVariant,
+        selectedOptions
+      }));
       console.log("Add to Cart Response : ", response);
       if (response?.payload?.success) {
+        // Track add to cart activity
+        logProductAddToCart(productId);
         toast({
           title: response?.payload?.message,
 

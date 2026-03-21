@@ -1,4 +1,5 @@
 import Category from "../../models/Category.js";
+import { emitEvent, SOCKET_EVENTS } from "../../helpers/socket.js";
 
 // Add new category
 export const addCategory = async (req, res) => {
@@ -32,6 +33,10 @@ export const addCategory = async (req, res) => {
         });
 
         const savedCategory = await newCategory.save();
+
+        // Emit real-time event for category creation
+        emitEvent(SOCKET_EVENTS.CATEGORY_CREATED, { category: savedCategory });
+        emitEvent(SOCKET_EVENTS.REFRESH_CATEGORIES, { action: 'created', categoryId: savedCategory._id });
 
         return res.status(201).json({
             message: "Category created successfully",
@@ -143,6 +148,10 @@ export const updateCategory = async (req, res) => {
 
         const updatedCategory = await category.save();
 
+        // Emit real-time event for category update
+        emitEvent(SOCKET_EVENTS.CATEGORY_UPDATED, { category: updatedCategory });
+        emitEvent(SOCKET_EVENTS.REFRESH_CATEGORIES, { action: 'updated', categoryId: updatedCategory._id });
+
         return res.status(200).json({
             message: "Category updated successfully",
             success: true,
@@ -178,6 +187,10 @@ export const deleteCategory = async (req, res) => {
                 success: false
             });
         }
+
+        // Emit real-time event for category deletion
+        emitEvent(SOCKET_EVENTS.CATEGORY_DELETED, { categoryId: id });
+        emitEvent(SOCKET_EVENTS.REFRESH_CATEGORIES, { action: 'deleted', categoryId: id });
 
         return res.status(200).json({
             message: "Category deleted successfully",

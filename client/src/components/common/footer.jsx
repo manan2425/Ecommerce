@@ -7,10 +7,18 @@ function Footer({ simplified = false }) {
                 <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* About Us */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4">Automation & Control Design</h3>
+                        <h3 className="text-xl font-bold mb-4">SHREE MARUTI TRADERS</h3>
                         <p className="text-gray-400 text-sm">
                             Advanced automation and control solutions for modern industries. Quality products, cutting-edge technology, and expert support.
                         </p>
+                        <div className="text-gray-400 text-sm mt-3 space-y-1">
+                            <p>Plot 59, Shop 6, Aarogyajyoti Pharmacy</p>
+                            <p>GIDC, V.U. Nagar, Anand - 388121</p>
+                            <p>📞 Rushil Sevak: +91 78743 93297</p>
+                            <p>📞 Anish Sharma: +91 89882 99522</p>
+                            <p>✉️ mtronapp@gmail.com</p>
+                            <p className="text-xs mt-2">GST: 24AHLPS6771N1ZH</p>
+                        </div>
                     </div>
 
                     {/* Quick Links */}
@@ -63,10 +71,10 @@ function Footer({ simplified = false }) {
 
             <div className="border-t border-gray-800 mt-10 pt-6 text-center">
                 <p className="text-sm text-gray-500">
-                    &copy; {new Date().getFullYear()} Automation & Control Design. All rights reserved.
+                    &copy; {new Date().getFullYear()} SHREE MARUTI TRADERS. All rights reserved.
                 </p>
                 <p className="text-xs text-gray-600 mt-1 font-medium">
-                    Developed and Designed by <a href="#" className="text-primary hover:underline">Manan Patel</a>
+                    Developed and Designed by <a href="https://manan-personal-portfolio-seven.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Manan Patel</a>
                 </p>
             </div>
         </footer>

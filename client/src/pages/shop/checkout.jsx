@@ -8,6 +8,7 @@ import { createNewOrder } from "@/store/shop/order-slice";
 import { useToast } from "@/hooks/use-toast";
 import { clearCart } from "@/store/shop/cart-slice";
 import { useNavigate } from "react-router-dom";
+import { logProductPurchase } from "@/lib/activityTracker";
 
 export default function ShopCheckout() {
 
@@ -25,13 +26,32 @@ export default function ShopCheckout() {
   const totalCartAmount = cartItems && cartItems.items && cartItems.items.length > 0
     ? cartItems.items.reduce(
       (sum, currentItem) => {
-        const unit = (currentItem?.salePrice > 0 ? currentItem?.salePrice : currentItem?.price) || 0;
-        const addon = currentItem?.selectedPart?.price || 0;
-        return sum + ((unit + addon) * (currentItem?.quantity || 1));
+        // Calculate price considering: variant > part > product
+        let basePrice = 0;
+        
+        if (currentItem?.selectedVariant?.salePrice > 0) {
+          basePrice = currentItem.selectedVariant.salePrice;
+        } else if (currentItem?.selectedVariant?.price > 0) {
+          basePrice = currentItem.selectedVariant.price;
+        } else if (currentItem?.selectedPart?.price > 0) {
+          basePrice = currentItem.selectedPart.price;
+        } else {
+          basePrice = (currentItem?.salePrice > 0 && currentItem?.salePrice < currentItem?.price) 
+            ? currentItem?.salePrice 
+            : currentItem?.price || 0;
+        }
+        
+        return sum + (basePrice * (currentItem?.quantity || 1));
       },
       0
     )
     : 0;
+
+  // GST Calculation (18%)
+  const GST_RATE = 0.18;
+  const subtotal = totalCartAmount;
+  const gstAmount = subtotal * GST_RATE;
+  const grandTotal = subtotal + gstAmount;
 
 
   const handleInitiatePayment = async () => {
@@ -60,16 +80,33 @@ export default function ShopCheckout() {
 
       const orderData = {
         userId: user?.id,
-        cartItems: cartItems.items.map(item => ({
-          productId: item?.productId,
-          title: item?.title,
-          image: item?.image,
-          // include selected 3D part info in order payload
-          selectedPart: item?.selectedPart || null,
-          price: item?.salePrice > 0 ? item?.salePrice : item?.price,
-          unitPrice: item?.salePrice > 0 ? item?.salePrice : item?.price,
-          quantity: item?.quantity
-        })),
+        cartItems: cartItems.items.map(item => {
+          // Calculate the actual price for this item
+          let itemPrice = 0;
+          if (item?.selectedVariant?.salePrice > 0) {
+            itemPrice = item.selectedVariant.salePrice;
+          } else if (item?.selectedVariant?.price > 0) {
+            itemPrice = item.selectedVariant.price;
+          } else if (item?.selectedPart?.price > 0) {
+            itemPrice = item.selectedPart.price;
+          } else {
+            itemPrice = item?.salePrice > 0 ? item?.salePrice : item?.price;
+          }
+          
+          return {
+            productId: item?.productId,
+            title: item?.title,
+            image: item?.image,
+            // include selected part info (with subpart hierarchy)
+            selectedPart: item?.selectedPart || null,
+            // include selected variant and options
+            selectedVariant: item?.selectedVariant || null,
+            selectedOptions: item?.selectedOptions || null,
+            price: itemPrice,
+            unitPrice: itemPrice,
+            quantity: item?.quantity
+          };
+        }),
         addressInfo: {
           addressId: currentSelectedAddress?._id,
           address: currentSelectedAddress?.address || "",
@@ -81,7 +118,9 @@ export default function ShopCheckout() {
         orderStatus: "pending",
         paymentMethod: "Paypal",
         paymentStatus: "pending",
-        totalAmount: totalCartAmount,
+        totalAmount: grandTotal,
+        subtotal: subtotal,
+        gstAmount: gstAmount,
         orderDate: new Date(),
         orderUpdateDate: new Date(),
         paymentId: "paymentId",
@@ -92,6 +131,11 @@ export default function ShopCheckout() {
       const order = await dispatch(createNewOrder(orderData));
 
       if (order?.payload?.success) {
+        // Track product purchases
+        cartItems.items.forEach(item => {
+          logProductPurchase(item.productId, item.quantity);
+        });
+        
         dispatch(clearCart());
         toast({
           title: "Order Placed",
@@ -129,14 +173,30 @@ export default function ShopCheckout() {
               :
               null
           }
-          <div className="flex justify-between mt-8">
-            <span className="font-bold">
-              Total Amount :
-            </span>
-            <span className="font-bold">
-              $ {totalCartAmount}
-            </span>
+          
+          {/* Price Breakdown */}
+          <div className="mt-8 p-4 bg-gray-50 rounded-lg border">
+            <h3 className="font-bold text-lg mb-4">Price Breakdown</h3>
+            
+            {/* Subtotal */}
+            <div className="flex justify-between py-2 border-b">
+              <span className="text-gray-600">Subtotal</span>
+              <span className="font-medium">$ {subtotal.toFixed(2)}</span>
+            </div>
+            
+            {/* GST */}
+            <div className="flex justify-between py-2 border-b">
+              <span className="text-gray-600">GST (18%)</span>
+              <span className="font-medium text-orange-600">+ $ {gstAmount.toFixed(2)}</span>
+            </div>
+            
+            {/* Grand Total */}
+            <div className="flex justify-between py-3 mt-2">
+              <span className="font-bold text-lg">Grand Total</span>
+              <span className="font-bold text-lg text-green-600">$ {grandTotal.toFixed(2)}</span>
+            </div>
           </div>
+
           <div className="mt-4 w-full">
             <Button className="w-full" onClick={() => handleInitiatePayment()}>
               Checkout With PayPal

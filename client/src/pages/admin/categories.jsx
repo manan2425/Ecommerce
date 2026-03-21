@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Edit2, Trash2, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import api from '@/lib/api';
+import { subscribeToCategoryUpdates, initSocket } from '@/lib/socket';
 
 export default function AdminCategories() {
   const { toast } = useToast();
@@ -46,6 +47,16 @@ export default function AdminCategories() {
 
   useEffect(() => {
     fetchCategories();
+  }, []);
+
+  // Real-time category updates
+  useEffect(() => {
+    initSocket();
+    const unsubscribe = subscribeToCategoryUpdates((data) => {
+      console.log('🔄 Admin: Refreshing categories due to update:', data);
+      fetchCategories();
+    });
+    return () => unsubscribe();
   }, []);
 
   const resetForm = () => {

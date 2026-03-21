@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "@/lib/api";
-import { Axis3D } from "lucide-react";
  
 const initialState = {
     approvalURL : "",
@@ -54,17 +53,16 @@ export const getAllOrders = createAsyncThunk("/order/orderData",async()=>{
 
 })
 
-export const updateOrderStatus = createAsyncThunk("/order/updateOrder",async({id,orderStatus})=>{
+export const updateOrderStatus = createAsyncThunk("/order/updateOrder",async({id,orderStatus}, { rejectWithValue })=>{
     try{
- 
         const response = await api.put(`/shop/order/updateOrder/${id}`,{
             orderStatus
         });
-
+        return response.data;
     }catch(error){
-        console.log(error)
+        console.log(error);
+        return rejectWithValue(error.response?.data || { message: "Failed to update order status" });
     }
-    
 })
 
 export const cancelOrder = createAsyncThunk("/order/cancelOrder",async(id)=>{
@@ -131,6 +129,15 @@ const shoppingOrderSlice = createSlice({
         .addCase(getAllOrders.rejected,(state)=>{
             state.isLoading = false;
             state.allOrders =  [];
+        })
+        .addCase(updateOrderStatus.pending,(state)=>{
+            state.isLoading = true;
+        })
+        .addCase(updateOrderStatus.fulfilled,(state)=>{
+            state.isLoading = false;
+        })
+        .addCase(updateOrderStatus.rejected,(state)=>{
+            state.isLoading = false;
         })
     }
 })

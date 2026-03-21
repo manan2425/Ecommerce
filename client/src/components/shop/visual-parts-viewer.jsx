@@ -108,10 +108,26 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
         setShowPartDetails(false);
     };
 
-    // Add part to cart
+    // Add part to cart (with path info for nested subparts)
     const handleAddPartToCart = () => {
         if (selectedPart && handleAddToCart) {
-            handleAddToCart(productDetails._id, selectedPart, quantity);
+            // Build the part path (array of indices showing how to reach this part)
+            const currentPartIndex = getCurrentParts().findIndex(p => p === selectedPart);
+            const partPath = [...navPath.map(n => n.index), currentPartIndex];
+            
+            // Remove subparts to avoid large nested data in cart
+            const { subparts, ...partWithoutSubparts } = selectedPart;
+            
+            // Create enriched part data with path info
+            const enrichedPart = {
+                ...partWithoutSubparts,
+                partPath: partPath,
+                parentName: navPath.length > 0 ? navPath[navPath.length - 1].part?.name : null,
+                isSubpart: navPath.length > 0,
+                depth: navPath.length
+            };
+            
+            handleAddToCart(productDetails._id, enrichedPart, quantity);
             setShowPartDetails(false);
             setQuantity(1);
         }
@@ -487,13 +503,16 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
                                         <h4 className="text-sm font-semibold text-gray-600 mb-2">
                                             Contains {selectedPart.subparts.length} sub-component(s):
                                         </h4>
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-2 mb-4">
                                             {selectedPart.subparts.slice(0, 5).map((sub, idx) => (
                                                 <span 
                                                     key={idx}
                                                     className="px-2 py-1 bg-gray-100 rounded text-sm text-gray-600"
                                                 >
                                                     {sub.name || `Sub-part ${idx + 1}`}
+                                                    {sub.subparts && sub.subparts.length > 0 && (
+                                                        <span className="ml-1 text-purple-500">({sub.subparts.length})</span>
+                                                    )}
                                                 </span>
                                             ))}
                                             {selectedPart.subparts.length > 5 && (
@@ -502,6 +521,21 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
                                                 </span>
                                             )}
                                         </div>
+                                        
+                                        {/* Explore Subparts Button - navigates to dedicated page */}
+                                        <Button
+                                            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                                            onClick={() => {
+                                                const idx = currentParts.findIndex(p => p === selectedPart);
+                                                const pathIndices = [...navPath.map(n => n.index), idx];
+                                                const partPath = pathIndices.join(',');
+                                                onClose();
+                                                navigate(`/shop/product/${productDetails._id}/part/${partPath}`);
+                                            }}
+                                        >
+                                            <ZoomIn className="w-4 h-4 mr-2" />
+                                            Explore {selectedPart.subparts.length} Subparts
+                                        </Button>
                                     </div>
                                 )}
                             </div>

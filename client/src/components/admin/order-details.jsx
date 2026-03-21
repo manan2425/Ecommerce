@@ -3,26 +3,51 @@ import { DialogContent, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { getAllOrders, resetOrderDetails, updateOrderStatus } from "@/store/shop/order-slice";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminOrderDetailsView({ orderDetails, setOpenDetailsDialog }) {
     // console.log("Order Details : ",orderDetails);
 
     const dispatch = useDispatch();
-    const initialFormData = {
-        status: orderDetails?.orderStatus || ""
-    };
-    const [formData, setFormData] = useState(initialFormData);
-    const handleUpdateStatus = async (e) => {
-        try {
-            e.preventDefault();
-            // console.log("Form Data : ",formData);
-            // console.log("Id : ",orderDetails?._id);
-            const { status } = formData;
-            const id = orderDetails?._id;
+    const { toast } = useToast();
+    const [formData, setFormData] = useState({
+        status: ""
+    });
+    const [isUpdating, setIsUpdating] = useState(false);
 
-            const response = await dispatch(updateOrderStatus({ id, orderStatus: status }));
+    // Update formData when orderDetails changes
+    useEffect(() => {
+        if (orderDetails?.orderStatus) {
+            setFormData({ status: orderDetails.orderStatus });
+        }
+    }, [orderDetails]);
+    
+    const handleUpdateStatus = async (e) => {
+        e.preventDefault();
+        
+        const { status } = formData;
+        const id = orderDetails?._id;
+
+        if (!id || !status) {
+            toast({
+                title: "Error",
+                description: "Order ID or status is missing",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setIsUpdating(true);
+        
+        try {
+            await dispatch(updateOrderStatus({ id, orderStatus: status })).unwrap();
+
+            toast({
+                title: "Success",
+                description: "Order status updated successfully"
+            });
 
             dispatch(resetOrderDetails());
             setOpenDetailsDialog(false);
@@ -30,6 +55,13 @@ export default function AdminOrderDetailsView({ orderDetails, setOpenDetailsDial
 
         } catch (error) {
             console.log(error);
+            toast({
+                title: "Error",
+                description: error?.message || "Failed to update order status",
+                variant: "destructive"
+            });
+        } finally {
+            setIsUpdating(false);
         }
     }
 
@@ -177,8 +209,9 @@ export default function AdminOrderDetailsView({ orderDetails, setOpenDetailsDial
                             ]}
                             formData={formData}
                             setFormData={setFormData}
-                            buttonText="Update Order Status"
+                            buttonText={isUpdating ? "Updating..." : "Update Order Status"}
                             onSubmit={handleUpdateStatus}
+                            isBtnDisabled={isUpdating}
                         />
                     </div>
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,65 +6,72 @@
 
 @layer base {
   :root {
-    --background: 220 30% 98%; /* Soft cool white */
-    --foreground: 224 71% 4%; /* Deep navy black */
+    --background: 210 20% 98%; /* Cool off-white */
+    --foreground: 222 47% 11%; /* Deep slate */
 
     --card: 0 0% 100%;
-    --card-foreground: 224 71% 4%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 4%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 262 83% 58%; /* Vivid Violet */
+    --primary: 215 28% 17%; /* Steel charcoal */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220.9 39.3% 11%;
+    --secondary: 214 32% 91%; /* Light steel */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 8.9% 46.1%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 262 83% 96%; /* Light Violet Tint */
-    --accent-foreground: 262 83% 58%;
+    --accent: 199 89% 48%; /* Steel blue accent */
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 83% 58%;
+    --border: 214 32% 86%;
+    --input: 214 32% 86%;
+    --ring: 215 28% 17%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
+
+    /* Chart colors - Steel palette */
+    --chart-1: 199 89% 48%; /* Steel blue */
+    --chart-2: 215 28% 35%; /* Medium steel */
+    --chart-3: 173 58% 39%; /* Teal steel */
+    --chart-4: 43 74% 66%; /* Gold accent */
+    --chart-5: 27 87% 67%; /* Copper accent */
   }
 
   .dark {
-    --background: 224 71% 4%; /* Deep Navy */
+    --background: 222 47% 8%; /* Deep slate */
     --foreground: 210 40% 98%;
 
-    --card: 224 71% 6%; /* Slightly lighter navy */
+    --card: 222 47% 11%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 224 71% 4%;
+    --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 263 70% 50%; /* Deep Violet */
-    --primary-foreground: 210 40% 98%;
+    --primary: 199 89% 48%; /* Steel blue */
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 215 27.9% 16.9%;
+    --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263 70% 50%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 199 89% 48%;
   }
 }
 
@@ -73,7 +80,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-['Outfit'];
+    @apply bg-background text-foreground font-['Poppins'];
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
   }
 }
 

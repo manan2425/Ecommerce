@@ -7,6 +7,10 @@ const AddressSchema = new mongoose.Schema({
     pincode : String,
     phone : String,
     notes : String,
+    // GST number for GST billing (optional)
+    gstNumber : { type: String, default: "" },
+    // Whether user wants GST bill
+    wantsGstBill : { type: Boolean, default: false },
 },{timestamps : true});
 
 const Address =  mongoose.model("Address",AddressSchema);

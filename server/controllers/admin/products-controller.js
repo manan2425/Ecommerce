@@ -1,5 +1,6 @@
 import { ImageUploadUtils } from "../../helpers/cloudinary.js";
 import Product from "../../models/Product.js";
+import { emitEvent, SOCKET_EVENTS } from "../../helpers/socket.js";
 
 // Image Upload
 export const handleImageUpload = async (req, res) => {
@@ -38,7 +39,7 @@ export const handleImageUpload = async (req, res) => {
 // Add a new product
 export const addProduct = async(req,res)=>{
     try{
-        const {image,title,description,category,brand,price,salePrice,totalStock, parts, redThreshold, yellowThreshold } = req.body;
+        const {image,title,description,descriptionPdf,category,brand,price,salePrice,totalStock, parts, redThreshold, yellowThreshold, customFields, options, variants } = req.body;
         console.log("Request Body :",req.body)
         if(image==="" || title==="" || description==="" || category==="" || brand===""){
             
@@ -79,13 +80,50 @@ export const addProduct = async(req,res)=>{
                 }
             }
 
+            // Parse customFields, options, variants if they are JSON strings
+            let parsedCustomFields = [];
+            let parsedOptions = [];
+            let parsedVariants = [];
+            
+            if (customFields) {
+                try {
+                    parsedCustomFields = typeof customFields === 'string' ? JSON.parse(customFields) : customFields;
+                } catch (e) {
+                    console.log('Failed to parse customFields', e);
+                }
+            }
+            if (options) {
+                try {
+                    parsedOptions = typeof options === 'string' ? JSON.parse(options) : options;
+                } catch (e) {
+                    console.log('Failed to parse options', e);
+                }
+            }
+            if (variants) {
+                try {
+                    parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
+                } catch (e) {
+                    console.log('Failed to parse variants', e);
+                }
+            }
+
             const newProduct = new Product({
-                image, title, description, category, brand, price, salePrice, totalStock,
+                image, title, description, 
+                descriptionPdf: descriptionPdf || '',
+                category, brand, price, salePrice, totalStock,
                 redThreshold: redThreshold ? Number(redThreshold) : 5,
                 yellowThreshold: yellowThreshold ? Number(yellowThreshold) : 20,
-                parts: parsedParts
+                parts: parsedParts,
+                customFields: parsedCustomFields,
+                options: parsedOptions,
+                variants: parsedVariants
             });
             const data = await newProduct.save();
+            
+            // Emit real-time event for product creation
+            emitEvent(SOCKET_EVENTS.PRODUCT_CREATED, { product: newProduct });
+            emitEvent(SOCKET_EVENTS.REFRESH_PRODUCTS, { action: 'created', productId: newProduct._id });
+            
             return res.status(200).json({
                 data : newProduct,
                 success : true,
@@ -123,7 +161,7 @@ export const fetchAllProducts = async(req,res)=>{
 export const editProduct = async (req, res) => {
     try {
         const { id } = req.params; // Get the product ID from URL parameters
-        const { image, title, description, category, brand, price, salePrice, totalStock, parts, redThreshold, yellowThreshold } = req.body;
+        const { image, title, description, descriptionPdf, category, brand, price, salePrice, totalStock, parts, redThreshold, yellowThreshold, customFields, options, variants } = req.body;
 
         // Check if ID is provided
         if (!id) {
@@ -178,6 +216,7 @@ export const editProduct = async (req, res) => {
         findProduct.title = title || findProduct.title;
         findProduct.image = image || findProduct.image;
         findProduct.description = description || findProduct.description;
+        findProduct.descriptionPdf = descriptionPdf !== undefined ? descriptionPdf : findProduct.descriptionPdf;
         findProduct.category = category || findProduct.category;
         findProduct.brand = brand || findProduct.brand;
         findProduct.price = Number(price) || findProduct.price;
@@ -196,8 +235,42 @@ export const editProduct = async (req, res) => {
             }
         }
 
+        // Update customFields
+        if (customFields !== undefined) {
+            try {
+                const parsed = typeof customFields === 'string' ? JSON.parse(customFields) : customFields;
+                if (Array.isArray(parsed)) findProduct.customFields = parsed;
+            } catch (e) {
+                console.log('Could not parse customFields during edit', e);
+            }
+        }
+
+        // Update options
+        if (options !== undefined) {
+            try {
+                const parsed = typeof options === 'string' ? JSON.parse(options) : options;
+                if (Array.isArray(parsed)) findProduct.options = parsed;
+            } catch (e) {
+                console.log('Could not parse options during edit', e);
+            }
+        }
+
+        // Update variants
+        if (variants !== undefined) {
+            try {
+                const parsed = typeof variants === 'string' ? JSON.parse(variants) : variants;
+                if (Array.isArray(parsed)) findProduct.variants = parsed;
+            } catch (e) {
+                console.log('Could not parse variants during edit', e);
+            }
+        }
+
         // Save the updated product
         const updatedProduct = await findProduct.save();
+
+        // Emit real-time event for product update
+        emitEvent(SOCKET_EVENTS.PRODUCT_UPDATED, { product: updatedProduct });
+        emitEvent(SOCKET_EVENTS.REFRESH_PRODUCTS, { action: 'updated', productId: updatedProduct._id });
 
         return res.status(200).json({
             success: true,
@@ -228,6 +301,10 @@ export const deleteProduct = async(req,res)=>{
                 return res.status(404).json({message : "Product not found",success:false})
             }
             else{
+                // Emit real-time event for product deletion
+                emitEvent(SOCKET_EVENTS.PRODUCT_DELETED, { productId: id });
+                emitEvent(SOCKET_EVENTS.REFRESH_PRODUCTS, { action: 'deleted', productId: id });
+                
                 return res.status(200).json({message : "Product successfully deleted",success:true})
             }   
         }

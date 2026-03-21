@@ -9,9 +9,17 @@ const initialState = {
 
 // Add Item to cart
 export const addToCart = createAsyncThunk("/cart/addToCart",
-    async({userId,productId,quantity,selectedPart})=>{
+    async({userId, productId, quantity, selectedPart, selectedVariant, selectedOptions, isService})=>{
     try{
-        const response = await api.post(`/shop/cart/add`,{userId,productId,quantity,selectedPart});
+        const response = await api.post(`/shop/cart/add`,{
+            userId,
+            productId,
+            quantity,
+            selectedPart,
+            selectedVariant,
+            selectedOptions,
+            isService
+        });
         console.log("Add to Cart : ",response.data);
         return response.data;
 

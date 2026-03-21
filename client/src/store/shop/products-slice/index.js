@@ -10,10 +10,11 @@ const initialState = {
 }
 
 export const fetchAllFilteredProducts = createAsyncThunk("/products/fetchAllProducts",
-    async({filterParams,sortParams})=>{
+    async({filterParams,sortParams, keyword})=>{
         try{
 
             const query = new URLSearchParams({...filterParams,sortBy : sortParams});
+            if(keyword) query.append("keyword", keyword);
             
             console.log("Send String : ",query);
 

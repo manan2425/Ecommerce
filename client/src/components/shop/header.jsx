@@ -1,18 +1,21 @@
 
-import { House, LogOut, Menu, ShoppingCart, User } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { House, LogOut, Menu, ShoppingCart, User, Search, X, ChevronDown } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Input } from "../ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { useSelector, useDispatch } from "react-redux";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logout } from "@/store/auth-slice";
+import { logUserLogout } from "@/lib/activityTracker";
 
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CartWrapper from "./cart-wrapper";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { fetchShopCategories } from "@/store/shop/category-slice";
+import { getSearchSuggestions, clearSuggestions } from "@/store/shop/search-slice";
 import { Label } from "../ui/label";
 import axios from "axios";
 
@@ -28,20 +31,28 @@ const MenuItems = () => {
     dispatch(fetchShopCategories());
   }, [dispatch]);
 
-  // Build menu items dynamically from categories
-  const menuItems = [
+  // Static menu items (non-category)
+  const staticMenuItems = [
     { id: "home", label: "Home", path: "/shop/home" },
-    ...categories.map(cat => ({
-      id: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
-      label: cat.name,
-      path: "/shop/listing"
-    }))
+    { id: "about", label: "About Us", path: "/shop/about" }
   ];
+
+  const endMenuItems = [
+    { id: "services", label: "Services", path: "/shop/services" },
+    { id: "contact", label: "Contact Us", path: "/shop/contact" }
+  ];
+
+  // Category items for dropdown
+  const categoryItems = categories.map(cat => ({
+    id: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
+    label: cat.name,
+    path: "/shop/listing"
+  }));
 
   const navigateToCategory = (currentMenu) => {
 
     sessionStorage.removeItem("filters");
-    const currentFilter = currentMenu.id !== "home" ? {
+    const currentFilter = (currentMenu.id !== "home" && currentMenu.id !== "services" && currentMenu.id !== "about" && currentMenu.id !== "contact") ? {
       category: [currentMenu.id]
     } : null;
 
@@ -58,16 +69,62 @@ const MenuItems = () => {
 
   return (
     <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row ">
-      {
-        menuItems.map(menuItem => <Label
+      {/* Static menu items */}
+      {staticMenuItems.map(menuItem => (
+        <Label
           className="text-sm font-medium cursor-pointer hover:text-primary transition-colors relative group"
           onClick={() => navigateToCategory(menuItem)}
-          key={menuItem.id} >
+          key={menuItem.id}
+        >
           {menuItem.label}
           <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
         </Label>
-        )
-      }
+      ))}
+
+      {/* Categories Dropdown */}
+      {categoryItems.length > 0 && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="text-sm font-medium cursor-pointer hover:text-primary transition-colors relative group flex items-center gap-1">
+              Categories
+              <ChevronDown className="h-4 w-4" />
+              <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {categoryItems.map(cat => (
+              <DropdownMenuItem
+                key={cat.id}
+                onClick={() => navigateToCategory(cat)}
+                className="cursor-pointer"
+              >
+                {cat.label}
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => navigate('/shop/listing')}
+              className="cursor-pointer font-medium"
+            >
+              View All Products
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+
+      {/* End menu items */}
+      {endMenuItems.map(menuItem => (
+        <Label
+          className="text-sm font-medium cursor-pointer hover:text-primary transition-colors relative group"
+          onClick={() => navigateToCategory(menuItem)}
+          key={menuItem.id}
+        >
+          {menuItem.label}
+          <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+        </Label>
+      ))}
     </nav>
   )
 }
@@ -86,6 +143,8 @@ const HeaderRightContent = () => {
 
   const handleLogOut = async () => {
     try {
+      // Log logout activity before dispatching logout
+      await logUserLogout();
       const reponse = await dispatch(logout());
     } catch (error) {
       console.log(error);
@@ -104,7 +163,7 @@ const HeaderRightContent = () => {
         console.log(error);
       }
     }
-    
+
     if (isAuthenticated && user?.id) {
       fetchCartData();
     }
@@ -114,14 +173,14 @@ const HeaderRightContent = () => {
   if (!isAuthenticated) {
     return (
       <div className="flex items-center gap-3">
-        <Button 
+        <Button
           variant="outline"
           onClick={() => navigate("/auth/login")}
           className="border-primary text-primary hover:bg-primary/10"
         >
           Login
         </Button>
-        <Button 
+        <Button
           onClick={() => navigate("/auth/register")}
           className="bg-primary hover:bg-primary/90"
         >
@@ -190,8 +249,63 @@ const HeaderRightContent = () => {
 
 export default function ShopHeader() {
 
-
   const { isAuthenticated } = useSelector(state => state.auth);
+  const { suggestions } = useSelector(state => state.shopSearch);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [keyword, setKeyword] = useState("");
+  const [searchParams] = useSearchParams();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    setKeyword(searchParams.get('keyword') || "");
+  }, [searchParams]);
+
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Fetch suggestions as user types
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (keyword.trim().length >= 2) {
+        dispatch(getSearchSuggestions(keyword));
+        setShowSuggestions(true);
+      } else {
+        dispatch(clearSuggestions());
+        setShowSuggestions(false);
+      }
+    }, 300); // Debounce
+
+    return () => clearTimeout(timer);
+  }, [keyword, dispatch]);
+
+  const handleSearch = () => {
+    if (keyword.trim()) {
+      setShowSuggestions(false);
+      navigate(`/shop/search?q=${encodeURIComponent(keyword.trim())}`);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setKeyword(suggestion);
+    setShowSuggestions(false);
+    navigate(`/shop/search?q=${encodeURIComponent(suggestion)}`);
+  };
+
+  const clearSearch = () => {
+    setKeyword("");
+    dispatch(clearSuggestions());
+    setShowSuggestions(false);
+  };
 
   return (
 
@@ -200,14 +314,59 @@ export default function ShopHeader() {
       <div className="flex h-16 items-center justify-between px-4 md:px-6 container mx-auto">
 
         <Link to="/shop/home" className="flex items-center gap-2 group">
-          <House className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
-          <span className="font-extrabold text-xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent tracking-tight">
-            E-Commerce
+          <img src="/company_logo.png" alt="Company Logo" className="h-10 w-auto object-contain group-hover:scale-105 transition-transform" />
+          <span className="font-extrabold text-xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent tracking-tight hidden md:inline">
+            SHREE MARUTI TRADERS
           </span>
         </Link>
 
         <div className="hidden lg:block">
           <MenuItems />
+        </div>
+
+        {/* Enhanced Search Bar */}
+        <div className="hidden lg:flex items-center w-full max-w-md mx-4 relative" ref={searchRef}>
+          <div className="relative w-full">
+            <Input
+              placeholder="Search products, brands, categories..."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onFocus={() => keyword.length >= 2 && setShowSuggestions(true)}
+              className="bg-gray-50 pr-16 pl-4 h-10 rounded-full border-gray-200 focus:border-primary focus:ring-primary"
+            />
+            {keyword && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-12 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+            <Button 
+              size="icon" 
+              onClick={handleSearch}
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-primary hover:bg-primary/90"
+            >
+              <Search className="w-4 h-4 text-white" />
+            </Button>
+          </div>
+
+          {/* Search Suggestions Dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-80 overflow-y-auto">
+              {suggestions.map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-sm"
+                >
+                  <Search className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-700">{suggestion}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <Sheet>
@@ -221,6 +380,24 @@ export default function ShopHeader() {
           </SheetTrigger>
           <SheetContent side="left" className="w-full mx-w-xs bg-white border-r border-gray-100">
             <div className="flex flex-col gap-6 mt-6">
+              {/* Mobile Search */}
+              <div className="relative">
+                <Input
+                  placeholder="Search products..."
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  className="bg-gray-50 pr-10"
+                />
+                <Button 
+                  size="icon" 
+                  variant="ghost"
+                  onClick={handleSearch}
+                  className="absolute right-0 top-0 h-full"
+                >
+                  <Search className="w-5 h-5" />
+                </Button>
+              </div>
               <MenuItems />
               <HeaderRightContent />
             </div>

@@ -11,6 +11,8 @@ import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { logProductAddToCart } from "@/lib/activityTracker";
+import { useRealtimeProducts } from "@/hooks/use-realtime";
 
 const createSearchParamsHelper = (filterParams) => {
   const queryParams = [];
@@ -41,19 +43,22 @@ export default function ShopList() {
   const { toast } = useToast();
   const location = useLocation();
 
+  // Real-time product updates - auto-refresh when admin adds/updates products
+  useRealtimeProducts(filters, sort);
+
   // Fetch All Products
   useEffect(() => {
     const getFilteredData = async () => {
       try {
         if (filters !== null && sort !== "") {
-          const response = await dispatch(fetchAllFilteredProducts({ filterParams: filters, sortParams: sort }));
+          const response = await dispatch(fetchAllFilteredProducts({ filterParams: filters, sortParams: sort, keyword: searchParams.get('keyword') }));
         }
       } catch (error) {
         console.log(error);
       }
     }
     getFilteredData();
-  }, [dispatch, sort, filters]);
+  }, [dispatch, sort, filters, searchParams]);
 
   // For Filter Session Storage (Reload on URL change)
   useEffect(() => {
@@ -124,7 +129,7 @@ export default function ShopList() {
   }
 
   // Add To Cart 
-  const handleAddToCart = async (productId, selectedPart = null, quantity = 1) => {
+  const handleAddToCart = async (productId, selectedPart = null, quantity = 1, selectedVariant = null, selectedOptions = null) => {
     if (!isAuthenticated) {
       toast({
         title: "Please login to add items to cart",
@@ -134,8 +139,17 @@ export default function ShopList() {
       return;
     }
     try {
-      const response = await dispatch(addToCart({ userId: user?.id, productId, quantity, selectedPart }));
+      const response = await dispatch(addToCart({ 
+        userId: user?.id, 
+        productId, 
+        quantity, 
+        selectedPart,
+        selectedVariant,
+        selectedOptions
+      }));
       if (response?.payload?.success) {
+        // Track add to cart activity
+        logProductAddToCart(productId);
         toast({
           title: response?.payload?.message,
         })
