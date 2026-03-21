@@ -6,7 +6,8 @@
 
   "scripts": {
     "dev": "vite",
-    "build": "node node_modules/vite/bin/vite.js build",
+    "build": "node ./node_modules/vite/bin/vite.js build",
+    "postinstall": "chmod +x node_modules/.bin/vite",
     "lint": "eslint .",
     "preview": "vite preview"
   },
