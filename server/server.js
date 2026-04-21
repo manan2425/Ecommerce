@@ -1,210 +1,145 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import mongoose from 'mongoose';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
+import express from "express";
+import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
-// Import controllers directly (you'll need to adapt them for plain Node.js)
-import { registerUser, login, logout, forgotPassword, resetPassword, authMiddleware } from './controllers/auth/auth-controller.js';
-// Import other controllers as needed...
-
+// Configuration
 import { setIO } from "./helpers/socket.js";
 
+// Routes
+import authRoutes from "./routes/auth/auth-routes.js";
+import adminProductsRouter from "./routes/admin/products-routes.js";
+import shopProductsRouter from "./routes/shop/product-routes.js";
+import shopCartRouter from "./routes/shop/cart-routes.js";
+import shopAddressRouter from "./routes/shop/address-routes.js";
+import shopOrderRouter from "./routes/shop/order-routes.js";
+import shopContactRouter from "./routes/shop/contact-routes.js";
+import adminBrandRouter from "./routes/admin/brand-routes.js";
+import adminCategoryRouter from "./routes/admin/category-routes.js";
+import adminContactRouter from "./routes/admin/contact-routes.js";
+import adminServiceRouter from "./routes/admin/service-routes.js";
+import adminServiceInquiryRouter from "./routes/admin/service-inquiry-routes.js";
+import adminAnalyticsRouter from "./routes/admin/analytics-routes.js";
+import adminUserRouter from "./routes/admin/user-routes.js";
+import shopBrandRouter from "./routes/shop/brand-routes.js";
+import shopCategoryRouter from "./routes/shop/category-routes.js";
+import shopReviewRouter from "./routes/shop/review-routes.js";
+import shopServiceRouter from "./routes/shop/service-routes.js";
+import shopServiceInquiryRouter from "./routes/shop/service-inquiry-routes.js";
+
+const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 5001;
 
-// Simple router object to map paths to handlers
-const routes = {
-  'GET /api/ping': (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'pong', timestamp: new Date().toISOString(), message: "API is reachable! 🚀" }));
-  },
-  'POST /api/auth/register': registerUser,
-  'POST /api/auth/login': login,
-  'POST /api/auth/logout': logout,
-  'POST /api/auth/forgot-password': forgotPassword,
-  'POST /api/auth/reset-password': resetPassword,
-  'GET /api/auth/check-auth': async (req, res) => {
-    // Manually apply authMiddleware for this route in the HTTP server
-    await authMiddleware(req, res, () => {
-      const user = req.user;
-      res.status(200).json({
-        success: true,
-        message: "User Authenticated",
-        user
-      });
-    });
-  },
-};
-
-// Function to parse JSON body
-const parseBody = (req) => {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => body += chunk);
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(body));
-      } catch (e) {
-        resolve({});
-      }
-    });
-    req.on('error', reject);
-  });
-};
-
-// CORS headers - Support both CLIENT_URL and CLIENT_BASE_URL (as suggested in deployment guide)
+// CORS Helper
 const getAllowedOrigin = () => {
-  return process.env.CLIENT_URL || process.env.CLIENT_BASE_URL || 'http://localhost:5173';
+    return process.env.CLIENT_URL || process.env.CLIENT_BASE_URL || 'http://localhost:5173';
 };
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': getAllowedOrigin(),
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control, X-Requested-With',
-  'Access-Control-Allow-Credentials': 'true'
-};
+// Middleware
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // Allow mirroring of the requester's origin for better Vercel/Render compatibility
+            // but fallback to the configured CLIENT_URL
+            callback(null, origin || getAllowedOrigin());
+        },
+        methods: ["GET", "POST", "DELETE", "PUT"],
+        allowedHeaders: [
+            "Content-Type",
+            "Authorization",
+            "Cache-Control",
+            "Expires",
+            "Pragma",
+            "X-Requested-With",
+        ],
+        credentials: true,
+    })
+);
 
-// Request handler
-const requestHandler = async (req, res) => {
-  // Dynamic CORS: Mirror the origin of the request to fix Vercel/Render cross-talk
-  const origin = req.headers.origin || getAllowedOrigin();
-  
-  const dynamicCorsHeaders = {
-    ...corsHeaders,
-    'Access-Control-Allow-Origin': origin
-  };
+app.use(cookieParser());
+app.use(express.json());
 
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200, dynamicCorsHeaders);
-    res.end();
-    return;
-  }
+// Main Request Handler Export for Vercel
+export default app;
 
-  // Set CORS headers
-  Object.keys(dynamicCorsHeaders).forEach(key => res.setHeader(key, dynamicCorsHeaders[key]));
+// Routes
+app.get("/api/ping", (req, res) => {
+    res.status(200).json({ status: "pong", message: "Express backend is alive! 🚀" });
+});
 
-  // Parse body for POST/PUT
-  if (req.method === 'POST' || req.method === 'PUT') {
-    req.body = await parseBody(req);
-  }
+app.use("/api/auth", authRoutes);
 
-  // Robust routing: extract pathname and handle /api/ prefix properly
-  let url = req.url || '/';
-  const urlObj = new URL(url, `http://${req.headers.host || 'localhost'}`);
-  let pathname = urlObj.pathname;
-  
-  // Ensure we match with or without leading /api if Vercel routes differently
-  const routeKey = `${req.method} ${pathname}`;
-  const handler = routes[routeKey];
+// Admin Routes
+app.use("/api/admin/products", adminProductsRouter);
+app.use("/api/admin/brands", adminBrandRouter);
+app.use("/api/admin/categories", adminCategoryRouter);
+app.use("/api/admin/contacts", adminContactRouter);
+app.use("/api/admin/services", adminServiceRouter);
+app.use("/api/admin/service-inquiry", adminServiceInquiryRouter);
+app.use("/api/admin/analytics", adminAnalyticsRouter);
+app.use("/api/admin/users", adminUserRouter);
 
-  console.log(`Incoming request: ${routeKey}`);
+// Shop Routes
+app.use("/api/shop/products", shopProductsRouter);
+app.use("/api/shop/cart", shopCartRouter);
+app.use("/api/shop/address", shopAddressRouter);
+app.use("/api/shop/order", shopOrderRouter);
+app.use("/api/shop/contact", shopContactRouter);
+app.use("/api/shop/brands", shopBrandRouter);
+app.use("/api/shop/categories", shopCategoryRouter);
+app.use("/api/shop/reviews", shopReviewRouter);
+app.use("/api/shop/services", shopServiceRouter);
+app.use("/api/shop/service-inquiry", shopServiceInquiryRouter);
 
-  if (handler) {
-    // Adapt Express-like req/res for controllers
-    req.params = {}; 
-    req.query = Object.fromEntries(urlObj.searchParams);
-    res.json = (data) => {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(data));
-    };
-    res.status = (code) => {
-      res.statusCode = code;
-      return res;
-    };
-    res.cookie = (name, value, options) => {
-      let cookieStr = `${name}=${value}`;
-      if (options?.httpOnly) cookieStr += '; HttpOnly';
-      if (options?.secure) cookieStr += '; Secure';
-      if (options?.path) cookieStr += `; Path=${options.path}`;
-      else cookieStr += '; Path=/';
-      res.setHeader('Set-Cookie', cookieStr);
-      return res;
-    };
-    res.clearCookie = (name) => {
-      res.setHeader('Set-Cookie', `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
-      return res;
-    };
-    // Call handler
-    await handler(req, res);
-  } else if (pathname === '/api/test' || pathname === '/test') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'OK', message: 'Backend is reachable! 🚀', currentOrigin: getAllowedOrigin() }));
-  } else if ((pathname === '/' || pathname === '/api') && req.method === 'GET') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Backend is working 🚀');
-  } else {
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Not found', requestedPath: pathname, method: req.method }));
-  }
-};
-
-const httpServer = createServer(requestHandler);
-
-// Export for Vercel
-export default requestHandler;
-
-// MongoDB Connection with improved stability for Serverless
+// MongoDB Connection
 let isConnected = false;
 const DataBaseConnection = async () => {
     if (isConnected) return;
-    
     const mongoUrl = process.env.MONGODB_URL;
     if (!mongoUrl) {
-        console.error("MONGODB_URL is not set in environment variables!");
+        console.error("MONGODB_URL is not set!");
         return;
     }
-
     try {
         await mongoose.connect(mongoUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of 30
+            serverSelectionTimeoutMS: 5000,
         });
-
         isConnected = true;
-        const dbName = mongoose.connection?.name || "database";
-        console.log(`MongoDB connected successfully to '${dbName}'.`);
+        console.log(`MongoDB connected: ${mongoose.connection.name}`);
     } catch (error) {
-        console.error("CRITICAL_DB_ERROR:", error?.message || error);
-        // Don't throw, let the request fail gracefully later if it needs the DB
+        console.error("DB Error:", error.message);
     }
 };
 
-// Initiate connection but don't block
 DataBaseConnection();
 
-// Socket.io - Only initialize in development or on real servers (not Serverless)
-let io;
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  io = new Server(httpServer, {
-    cors: {
-      origin: getAllowedOrigin(),
-      methods: ["GET", "POST"],
-      credentials: true
-    }
-  });
-
-  io.on('connection', (socket) => {
-    console.log('Client connected:', socket.id);
-
-    socket.on('disconnect', () => {
-      console.log('Client disconnected:', socket.id);
+// Socket.io initialization (Disabled on Vercel)
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+    const io = new Server(httpServer, {
+        cors: {
+            origin: getAllowedOrigin(),
+            methods: ["GET", "POST"],
+            credentials: true,
+        },
     });
-  });
 
-  setIO(io);
-} else {
-  console.log('Socket.io disabled for Serverless production');
-}
+    io.on("connection", (socket) => {
+        console.log("Client connected:", socket.id);
+        socket.on("disconnect", () => console.log("Client disconnected"));
+    });
 
-export { io };
-
-// Start Server only if not running on Vercel
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  httpServer.listen(PORT, () => {
-    console.log(`Server Running on port ${PORT}`);
-    console.log(`Allowed Origin: ${getAllowedOrigin()}`);
-  });
+    setIO(io);
+    
+    // Start local server if not on Vercel
+    httpServer.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 }
