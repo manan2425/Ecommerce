@@ -137,23 +137,34 @@ const httpServer = createServer(requestHandler);
 // Export for Vercel
 export default requestHandler;
 
-// MongoDB Connection
+// MongoDB Connection with improved stability for Serverless
+let isConnected = false;
 const DataBaseConnection = async () => {
-  const mongoUrl = process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/ecommerce1";
+    if (isConnected) return;
+    
+    const mongoUrl = process.env.MONGODB_URL;
+    if (!mongoUrl) {
+        console.error("MONGODB_URL is not set in environment variables!");
+        return;
+    }
 
-  try {
-    await mongoose.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    try {
+        await mongoose.connect(mongoUrl, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of 30
+        });
 
-    const dbName = mongoose.connection?.name || mongoUrl.split('/').pop();
-    console.log(`MongoDB connected successfully to '${dbName}'.`);
-  } catch (error) {
-    console.error("MongoDB connection error:", error?.message || error);
-  }
+        isConnected = true;
+        const dbName = mongoose.connection?.name || "database";
+        console.log(`MongoDB connected successfully to '${dbName}'.`);
+    } catch (error) {
+        console.error("CRITICAL_DB_ERROR:", error?.message || error);
+        // Don't throw, let the request fail gracefully later if it needs the DB
+    }
 };
 
+// Initiate connection but don't block
 DataBaseConnection();
 
 // Socket.io - Only initialize in development or on real servers (not Serverless)
