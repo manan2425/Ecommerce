@@ -9,7 +9,8 @@ const UserActivitySchema = new mongoose.Schema({
     activityType: {
         type: String,
         enum: ['login', 'logout', 'product_view', 'product_add_to_cart', 'product_purchase'],
-        required: true
+        required: true,
+        index: true
     },
     productId: {
         type: mongoose.Schema.Types.ObjectId,

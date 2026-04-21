@@ -26,53 +26,58 @@ export const getDashboardAnalytics = async (req, res) => {
       createdAt: { $gte: today }
     });
 
-    // ===== ORDER & REVENUE STATISTICS =====
+    // ===== ORDER & REVENUE STATISTICS (Optimized) =====
     
-    // Get all orders for revenue calculation
-    const allOrders = await Order.find({});
-    
-    // Total Revenue (all time)
-    const totalRevenue = allOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-    
-    // Today's Revenue
-    const todayOrders = allOrders.filter(order => {
-      const orderDate = new Date(order.orderDate);
-      return orderDate >= today;
-    });
-    const todayRevenue = todayOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-    
-    // This Week's Revenue (last 7 days)
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const weeklyOrders = allOrders.filter(order => {
-      const orderDate = new Date(order.orderDate);
-      return orderDate >= sevenDaysAgo;
-    });
-    const weeklyRevenue = weeklyOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-    
-    // This Month's Revenue (last 30 days)
-    const thirtyDaysAgo = new Date(today);
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const monthlyOrders = allOrders.filter(order => {
-      const orderDate = new Date(order.orderDate);
-      return orderDate >= thirtyDaysAgo;
-    });
-    const monthlyRevenue = monthlyOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    // Aggregate for global and daily/weekly/monthly revenue
+    const revenueAgg = await Order.aggregate([
+      {
+        $facet: {
+          totalRevenue: [
+            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+          ],
+          todayRevenue: [
+            { $match: { orderDate: { $gte: today } } },
+            { $group: { _id: null, total: { $sum: '$totalAmount' }, count: { $sum: 1 } } }
+          ],
+          weeklyRevenue: [
+            { $match: { orderDate: { $gte: sevenDaysAgo } } },
+            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+          ],
+          monthlyRevenue: [
+            { $match: { orderDate: { $gte: thirtyDaysAgo } } },
+            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+          ],
+          orderStatusCounts: [
+            { $group: { _id: '$orderStatus', count: { $sum: 1 } } }
+          ]
+        }
+      }
+    ]);
 
-    // Order Status Counts
-    const orderStatusCounts = {
-      pending: allOrders.filter(o => o.orderStatus === 'pending').length,
-      confirmed: allOrders.filter(o => o.orderStatus === 'confirmed').length,
-      inProcess: allOrders.filter(o => o.orderStatus === 'inProcess').length,
-      inShipping: allOrders.filter(o => o.orderStatus === 'inShipping').length,
-      delivered: allOrders.filter(o => o.orderStatus === 'delivered').length,
-      rejected: allOrders.filter(o => o.orderStatus === 'rejected').length,
-      cancelled: allOrders.filter(o => o.orderStatus === 'cancelled').length,
-    };
+    const results = revenueAgg[0];
+    const totalRevenue = results.totalRevenue[0]?.total || 0;
+    const todayRevenue = results.todayRevenue[0]?.total || 0;
+    const todayOrdersCount = results.todayRevenue[0]?.count || 0;
+    const weeklyRevenue = results.weeklyRevenue[0]?.total || 0;
+    const monthlyRevenue = results.monthlyRevenue[0]?.total || 0;
     
-    // Total Orders
-    const totalOrders = allOrders.length;
-    const todayOrdersCount = todayOrders.length;
+    // Map order status counts
+    const orderStatusCounts = {
+      pending: 0,
+      confirmed: 0,
+      inProcess: 0,
+      inShipping: 0,
+      delivered: 0,
+      rejected: 0,
+      cancelled: 0,
+    };
+    results.orderStatusCounts.forEach(item => {
+      if (orderStatusCounts.hasOwnProperty(item._id)) {
+        orderStatusCounts[item._id] = item.count;
+      }
+    });
+
+    const totalOrders = await Order.countDocuments();
 
     // Revenue per day (last 7 days)
     const revenuePerDay = await Order.aggregate([
