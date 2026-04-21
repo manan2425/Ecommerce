@@ -1,7 +1,17 @@
 import { io } from 'socket.io-client';
 
 // Get the server URL from environment or use default
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const getSocketUrl = () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (apiUrl) return apiUrl;
+    
+    // If in production and no URL, use same-origin
+    if (import.meta.env.PROD) return '';
+    
+    return 'http://localhost:5001';
+};
+
+const SOCKET_URL = getSocketUrl();
 
 // Create socket instance
 let socket = null;

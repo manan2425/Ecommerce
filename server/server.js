@@ -67,15 +67,23 @@ const corsHeaders = {
 
 // Request handler
 const requestHandler = async (req, res) => {
+  // Dynamic CORS: Mirror the origin of the request to fix Vercel/Render cross-talk
+  const origin = req.headers.origin || getAllowedOrigin();
+  
+  const dynamicCorsHeaders = {
+    ...corsHeaders,
+    'Access-Control-Allow-Origin': origin
+  };
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    res.writeHead(200, corsHeaders);
+    res.writeHead(200, dynamicCorsHeaders);
     res.end();
     return;
   }
 
   // Set CORS headers
-  Object.keys(corsHeaders).forEach(key => res.setHeader(key, corsHeaders[key]));
+  Object.keys(dynamicCorsHeaders).forEach(key => res.setHeader(key, dynamicCorsHeaders[key]));
 
   // Parse body for POST/PUT
   if (req.method === 'POST' || req.method === 'PUT') {
