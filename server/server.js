@@ -78,14 +78,21 @@ const requestHandler = async (req, res) => {
     req.body = await parseBody(req);
   }
 
-  // Simple routing
-  const routeKey = `${req.method} ${req.url}`;
+  // Robust routing: extract pathname and handle /api/ prefix properly
+  let url = req.url || '/';
+  const urlObj = new URL(url, `http://${req.headers.host || 'localhost'}`);
+  let pathname = urlObj.pathname;
+  
+  // Ensure we match with or without leading /api if Vercel routes differently
+  const routeKey = `${req.method} ${pathname}`;
   const handler = routes[routeKey];
+
+  console.log(`Incoming request: ${routeKey}`);
 
   if (handler) {
     // Adapt Express-like req/res for controllers
-    req.params = {}; // Add params parsing if needed
-    req.query = {}; // Add query parsing if needed
+    req.params = {}; 
+    req.query = Object.fromEntries(urlObj.searchParams);
     res.json = (data) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(data));
@@ -109,12 +116,15 @@ const requestHandler = async (req, res) => {
     };
     // Call handler
     await handler(req, res);
-  } else if (req.url === '/' && req.method === 'GET') {
+  } else if (pathname === '/api/test' || pathname === '/test') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'OK', message: 'Backend is reachable! 🚀', currentOrigin: getAllowedOrigin() }));
+  } else if ((pathname === '/' || pathname === '/api') && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Backend is working 🚀');
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Not found' }));
+    res.end(JSON.stringify({ error: 'Not found', requestedPath: pathname, method: req.method }));
   }
 };
 
