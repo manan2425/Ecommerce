@@ -120,6 +120,9 @@ const requestHandler = async (req, res) => {
 
 const httpServer = createServer(requestHandler);
 
+// Export for Vercel
+export default requestHandler;
+
 // MongoDB Connection
 const DataBaseConnection = async () => {
   const mongoUrl = process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/ecommerce1";
@@ -160,7 +163,10 @@ setIO(io);
 
 export { io };
 
-// Start Server
-httpServer.listen(PORT, () => {
-  console.log(`Server Running on port ${PORT}`);
-});
+// Start Server only if not running on Vercel
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  httpServer.listen(PORT, () => {
+    console.log(`Server Running on port ${PORT}`);
+    console.log(`Allowed Origin: ${getAllowedOrigin()}`);
+  });
+}

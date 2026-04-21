@@ -9,6 +9,11 @@ const getApiUrl = () => {
     return apiUrl.replace(/\/$/, '');
   }
 
+  // If in production and no API URL set, assume same-origin (for Vercel monorepo)
+  if (import.meta.env.PROD) {
+    return ''; // Relative to current domain
+  }
+
   // Fallback for development
   return 'http://localhost:5001';
 };
