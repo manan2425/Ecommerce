@@ -3,9 +3,20 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 export default function CommonForm({formControls,formData,setFormData,onSubmit,buttonText,isBtnDisabled}) {
   
+  const [showPassword, setShowPassword] = useState({});
+
+  const togglePasswordVisibility = (name) => {
+    setShowPassword(prev => ({
+        ...prev,
+        [name]: !prev[name]
+    }));
+  };
+
   function renderInputsByComponentType(getControlItem){
     let element = null;
     const value = formData[getControlItem.name]  || "";
@@ -13,14 +24,34 @@ export default function CommonForm({formControls,formData,setFormData,onSubmit,b
 
     switch(getControlItem.componentType){
         case "input":
-        element = <Input name={getControlItem.name} placeholder={getControlItem.placeholder} id={getControlItem.name} 
-            type = {getControlItem.type}
-            value={value}
-            onChange={event => setFormData({
-                ...formData,
-                [getControlItem.name] : event.target.value,
-            })}
-        />
+        const isPassword = getControlItem.type === 'password';
+        const isVisible = showPassword[getControlItem.name];
+
+        element = (
+        <div className="relative flex items-center">
+            <Input 
+                name={getControlItem.name} 
+                placeholder={getControlItem.placeholder} 
+                id={getControlItem.name} 
+                type = {isPassword ? (isVisible ? 'text' : 'password') : getControlItem.type}
+                value={value}
+                className="pr-10"
+                onChange={event => setFormData({
+                    ...formData,
+                    [getControlItem.name] : event.target.value,
+                })}
+            />
+            {isPassword && (
+                <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility(getControlItem.name)}
+                    className="absolute right-3 text-slate-400 hover:text-primary transition-colors"
+                >
+                    {isVisible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+            )}
+        </div>
+        )
         break;
         
         case "select":

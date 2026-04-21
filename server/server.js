@@ -1,109 +1,110 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express from 'express';
 import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
-import authRouter from "./routes/auth/auth-routes.js";
-import adminProductsRouter from "./routes/admin/products-routes.js"
-import adminCategoryRouter from "./routes/admin/category-routes.js";
-import adminAnalyticsRouter from "./routes/admin/analytics-routes.js";
-import shopProductsRouter from "./routes/shop/product-routes.js";
-import shopCartRouter from "./routes/shop/cart-routes.js";
-import shopAddressRouter from "./routes/shop/address-routes.js"; 
-import shopOrderRouter from "./routes/shop/order-routes.js"; 
-import shopReviewRouter from "./routes/shop/review-routes.js";
-import shopCategoryRouter from "./routes/shop/category-routes.js";
-import adminServiceRouter from "./routes/admin/service-routes.js";
-import adminUserRouter from "./routes/admin/user-routes.js";
-import adminContactRouter from "./routes/admin/contact-routes.js";
-import adminBrandRouter from "./routes/admin/brand-routes.js";
-import adminServiceInquiryRouter from "./routes/admin/service-inquiry-routes.js";
-import shopServiceRouter from "./routes/shop/service-routes.js";
-import shopContactRouter from "./routes/shop/contact-routes.js";
-import shopBrandRouter from "./routes/shop/brand-routes.js";
-import shopServiceInquiryRouter from "./routes/shop/service-inquiry-routes.js";
+// Import controllers directly (you'll need to adapt them for plain Node.js)
+import { registerUser, login, logout, forgotPassword, resetPassword } from './controllers/auth/auth-controller.js';
+// Import other controllers as needed...
+
 import { setIO } from "./helpers/socket.js";
 
-const app = express();
-const httpServer = createServer(app);
+const PORT = process.env.PORT || 5001;
 
-// ✅ TEST ROUTE
-app.get("/", (req, res) => {
-  res.send("Backend is working 🚀");
-});
+// Simple router object to map paths to handlers
+const routes = {
+  'POST /api/auth/register': registerUser,
+  'POST /api/auth/login': login,
+  'POST /api/auth/logout': logout,
+  'POST /api/auth/forgot-password': forgotPassword,
+  'POST /api/auth/reset-password': resetPassword,
+  // Add all other routes here...
+};
 
-// ✅ FIXED CORS (IMPORTANT 🔥)
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = [
-      'http://localhost:5173', // Development
-      'http://localhost:3000', // Alternative dev port
-      process.env.CLIENT_BASE_URL, // Production frontend URL
-      /\.vercel\.app$/, // Allow all Vercel domains
-    ].filter(Boolean); // Remove undefined values
-
-    // Check if origin matches any allowed pattern
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (typeof allowedOrigin === 'string') {
-        return origin === allowedOrigin;
-      } else if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
+// Function to parse JSON body
+const parseBody = (req) => {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch (e) {
+        resolve({});
       }
-      return false;
     });
+    req.on('error', reject);
+  });
+};
 
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "Cache-Control",
-    "Expires",
-    "Pragma",
-    "X-Requested-With"
-  ],
-  credentials: true
-}));
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': process.env.CLIENT_URL || 'http://localhost:5173',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control',
+  'Access-Control-Allow-Credentials': 'true'
+};
 
-// Middleware
-app.use(cookieParser());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// Request handler
+const requestHandler = async (req, res) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200, corsHeaders);
+    res.end();
+    return;
+  }
 
-// Routes
-app.use("/api/auth", authRouter);
-app.use("/api/admin/products", adminProductsRouter);
-app.use("/api/admin/categories", adminCategoryRouter);
-app.use("/api/admin/analytics", adminAnalyticsRouter);
-app.use("/api/shop/products", shopProductsRouter);
-app.use("/api/shop/cart", shopCartRouter);
-app.use("/api/shop/address", shopAddressRouter);
-app.use("/api/shop/order", shopOrderRouter);
-app.use("/api/shop/review", shopReviewRouter);
-app.use("/api/shop/categories", shopCategoryRouter);
-app.use("/api/admin/services", adminServiceRouter);
-app.use("/api/admin/users", adminUserRouter);
-app.use("/api/admin/contacts", adminContactRouter);
-app.use("/api/admin/service-inquiries", adminServiceInquiryRouter);
-app.use("/api/shop/services", shopServiceRouter);
-app.use("/api/shop/contact", shopContactRouter);
-app.use("/api/shop/service-inquiry", shopServiceInquiryRouter);
-app.use("/api/admin/brands", adminBrandRouter);
-app.use("/api/shop/brands", shopBrandRouter);
+  // Set CORS headers
+  Object.keys(corsHeaders).forEach(key => res.setHeader(key, corsHeaders[key]));
+
+  // Parse body for POST/PUT
+  if (req.method === 'POST' || req.method === 'PUT') {
+    req.body = await parseBody(req);
+  }
+
+  // Simple routing
+  const routeKey = `${req.method} ${req.url}`;
+  const handler = routes[routeKey];
+
+  if (handler) {
+    // Adapt Express-like req/res for controllers
+    req.params = {}; // Add params parsing if needed
+    req.query = {}; // Add query parsing if needed
+    res.json = (data) => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+    };
+    res.status = (code) => {
+      res.statusCode = code;
+      return res;
+    };
+    res.cookie = (name, value, options) => {
+      let cookieStr = `${name}=${value}`;
+      if (options?.httpOnly) cookieStr += '; HttpOnly';
+      if (options?.secure) cookieStr += '; Secure';
+      if (options?.path) cookieStr += `; Path=${options.path}`;
+      else cookieStr += '; Path=/';
+      res.setHeader('Set-Cookie', cookieStr);
+      return res;
+    };
+    res.clearCookie = (name) => {
+      res.setHeader('Set-Cookie', `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
+      return res;
+    };
+    // Call handler
+    await handler(req, res);
+  } else if (req.url === '/' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Backend is working 🚀');
+  } else {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Not found' }));
+  }
+};
+
+const httpServer = createServer(requestHandler);
 
 // MongoDB Connection
 const DataBaseConnection = async () => {
@@ -124,12 +125,10 @@ const DataBaseConnection = async () => {
 
 DataBaseConnection();
 
-const PORT = process.env.PORT || 5001;
-
 // Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -143,7 +142,6 @@ io.on('connection', (socket) => {
   });
 });
 
-app.set('io', io);
 setIO(io);
 
 export { io };

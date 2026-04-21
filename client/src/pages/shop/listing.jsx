@@ -7,7 +7,7 @@ import { sortOptions } from "@/config";
 import { useToast } from "@/hooks/use-toast";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { fetchAllFilteredProducts, fetchProductDetails } from "@/store/shop/products-slice";
-import { ArrowUpDownIcon } from "lucide-react";
+import { ArrowUpDownIcon, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
@@ -170,55 +170,73 @@ export default function ShopList() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8 p-6 md:p-8 bg-gray-50 min-h-screen">
-      <div className="bg-white rounded-xl shadow-lg p-6 h-fit sticky top-24 border border-gray-100">
-        <ProductFilter handleFilter={handleFilter} filters={filters} />
-      </div>
-      <div className="bg-transparent w-full">
-        <div className="p-6 bg-white rounded-xl shadow-sm mb-6 flex items-center justify-between border border-gray-100">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
-            All Products
-          </h2>
-          <div className="flex gap-4 items-center">
-            <span className="text-muted-foreground font-medium bg-gray-100 px-3 py-1 rounded-full text-sm">
-              {productList?.length || 0} Products
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-gray-100 transition-colors border-gray-300">
-                  <ArrowUpDownIcon className="h-4 w-4" />
-                  <span>Sort By</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px] bg-white shadow-xl rounded-lg border border-gray-100 p-2">
-                <DropdownMenuRadioGroup value={sort} onValueChange={(value) => setSort(value)}>
-                  {sortOptions.map((sortItem, index) => (
-                    <DropdownMenuRadioItem key={index} value={sortItem.id} className="cursor-pointer hover:bg-gray-50 rounded-md p-2 transition-colors">
-                      {sortItem.label}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+    <div className="flex flex-col min-h-screen bg-mesh">
+      <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-12 p-8 md:p-12">
+        
+        {/* Modern Filter Sidebar */}
+        <aside className="relative lg:block hidden">
+          <div className="bg-white rounded-[2.5rem] shadow-premium p-10 sticky top-28 border border-slate-100 overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+            <ProductFilter handleFilter={handleFilter} filters={filters} />
           </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {productList && productList.length > 0 ? (
-            productList.map((productItem, index) => (
-              <ShppingProductTile key={index} product={productItem} handleGetProductDetails={handleGetProductDetails} handleAddToCart={handleAddToCart} />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-20">
-              <h3 className="text-xl font-medium text-gray-500">No products found matching your criteria.</h3>
+        </aside>
+
+        <main className="w-full space-y-10">
+          {/* Refined Sort & Count Bar */}
+          <div className="p-8 bg-white/60 backdrop-blur-md rounded-[2.5rem] shadow-premium flex flex-col sm:flex-row items-center justify-between border border-white gap-6">
+            <div className="flex flex-col items-start gap-1">
+              <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+                Industrial Catalog
+              </h2>
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest px-1">
+                {productList?.length || 0} Components Available
+              </p>
             </div>
-          )}
-        </div>
-        <ProductDetailsModal
-          open={openDetailsDialog}
-          setOpen={setOpenDetailsDialog}
-          productDetails={productDetails}
-          handleAddToCart={handleAddToCart}
-        />
+            
+            <div className="flex gap-4 items-center w-full sm:w-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="lg" className="flex items-center gap-3 rounded-2xl border-slate-200 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-bold px-6">
+                    <ArrowUpDownIcon className="h-4 w-4" />
+                    <span>Sort By</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[220px] bg-white shadow-2xl rounded-3xl border border-slate-100 p-3 mt-2">
+                  <DropdownMenuRadioGroup value={sort} onValueChange={(value) => setSort(value)}>
+                    {sortOptions.map((sortItem, index) => (
+                      <DropdownMenuRadioItem key={index} value={sortItem.id} className="cursor-pointer hover:bg-slate-50 rounded-xl p-3 font-medium transition-colors mb-1 last:mb-0">
+                        {sortItem.label}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+
+          {/* Product Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-10">
+            {productList && productList.length > 0 ? (
+              productList.map((productItem, index) => (
+                <div key={index} className="flex">
+                  <ShppingProductTile product={productItem} handleGetProductDetails={handleGetProductDetails} handleAddToCart={handleAddToCart} />
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-32 glass rounded-[3rem] border-slate-100 flex flex-col items-center">
+                <Package className="w-20 h-20 text-slate-200 mb-6" />
+                <h3 className="text-2xl font-black text-slate-300">No components found matching your search.</h3>
+              </div>
+            )}
+          </div>
+          
+          <ProductDetailsModal
+            open={openDetailsDialog}
+            setOpen={setOpenDetailsDialog}
+            productDetails={productDetails}
+            handleAddToCart={handleAddToCart}
+          />
+        </main>
       </div>
     </div>
   )

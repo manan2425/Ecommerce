@@ -11,7 +11,7 @@ export const registerFormControls = [
     {
         name : "email",
         label : "Email",
-        placeholder : "Enter Your Emai",
+        placeholder : "Enter Your Email",
         componentType : "input",
         type : "email",
     },
@@ -222,38 +222,38 @@ export const shoppingViewHeaderMenuItems = [
         path  : "/shop/home"
     },
     {
-        id : "men",
-        label : "Men",
+        id : "automation",
+        label : "Automation",
         path : "/shop/listing"    
     },
     {
-        id : "women",
-        label : "Women",
+        id : "control",
+        label : "Control",
         path : "/shop/listing" 
     },
     {
-        id : "kids",
-        label : "Kids",
+        id : "sensors",
+        label : "Sensors",
         path : "/shop/listing" 
     },
     {
-        id : "footwear",
-        label : "Footwear",
+        id : "switchgear",
+        label : "Switchgear",
         path : "/shop/listing" 
     },
     {
-        id : "accessories",
-        label : "Accessories",
+        id : "measuring",
+        label : "Measuring",
         path : "/shop/listing" 
     }
 ]
 
 export const categoryOptionsMap = {
-    men : "Men",
-    women : "Women",
-    kids : "Kids",
-    accessories : "Accessories",
-    footwear : 'Footwear'
+    automation : "Automation",
+    control : "Control",
+    sensors : "Sensors",
+    switchgear : "Switchgear",
+    measuring : "Measuring"
 }
 
 export const brandOptionsMap = {
@@ -303,11 +303,11 @@ export const brandOptionsMap = {
 // Brand filter removed from user side (admin can still manage brands for products)
 export const filterOptions = {
     category : [
-        {id : "men", label : "Men"},
-        {id : "women", label : "Women"},
-        {id : "kids", label : "Kids"},
-        {id : "accessories", label : "Accessories"},
-        {id : "footwear", label : "Footwear"}
+        {id : "automation", label : "Automation"},
+        {id : "control", label : "Control"},
+        {id : "sensors", label : "Sensors"},
+        {id : "switchgear", label : "Switchgear"},
+        {id : "measuring", label : "Measuring"}
     ]
     // brand filter removed - users filter by category only
 }

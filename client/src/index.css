@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,72 +6,71 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%; /* Cool off-white */
-    --foreground: 222 47% 11%; /* Deep slate */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 222.2 84% 4.9%; /* Slate 950 */
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 215 28% 17%; /* Steel charcoal */
+    --primary: 221.2 83.2% 53.3%; /* Professional Corporate Blue (Tailwind Blue 600) */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 214 32% 91%; /* Light steel */
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 214 32% 91%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 199 89% 48%; /* Steel blue accent */
-    --accent-foreground: 210 40% 98%;
+    --accent: 214.3 31.8% 91.4%; /* Soft Light Blue/Slate Accent */
+    --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214 32% 86%;
     --input: 214 32% 86%;
-    --ring: 215 28% 17%;
+    --ring: 230 89% 53%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* Chart colors - Steel palette */
-    --chart-1: 199 89% 48%; /* Steel blue */
-    --chart-2: 215 28% 35%; /* Medium steel */
-    --chart-3: 173 58% 39%; /* Teal steel */
-    --chart-4: 43 74% 66%; /* Gold accent */
-    --chart-5: 27 87% 67%; /* Copper accent */
+    --chart-1: 230 89% 53%;
+    --chart-2: 38 97% 55%;
+    --chart-3: 173 58% 39%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
-    --background: 222 47% 8%; /* Deep slate */
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 11%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 11%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 199 89% 48%; /* Steel blue */
-    --primary-foreground: 222 47% 11%;
+    --primary: 217.2 91.2% 59.8%; /* Corporate Blue 500 */
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217 33% 17%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 199 89% 48%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 199 89% 48%;
+    --ring: 230 89% 60%;
   }
 }
 
@@ -80,16 +79,44 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-['Poppins'];
+    @apply bg-background text-foreground font-['Outfit'];
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-bold tracking-tight;
   }
 }
 
 /* Glassmorphism Utility */
 .glass {
-  @apply bg-white/30 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+  @apply bg-white/60 dark:bg-black/60 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)];
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-primary-foreground/10;
+}
+
+.text-gradient-primary {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-blue-400;
+}
+
+.hover-lift {
+  @apply transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)];
+}
+
+.shadow-premium {
+  @apply shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)];
+}
+
+.bg-mesh {
+  background-color: #ffffff;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(220,100%,95%,1) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(210,100%,98%,1) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(190,100%,96%,1) 0, transparent 50%);
+}
+
+.section-spacing {
+  @apply py-24 md:py-32;
 }
 
 /* Hide Scroll Bar */

@@ -138,16 +138,20 @@ const Contact = () => {
     };
 
     return (
-        <div className="min-h-screen">
-            {/* Hero Section */}
-            <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background py-16">
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        <span className="text-primary">Contact</span>
+        <div className="min-h-screen bg-mesh">
+            {/* Cinematic Contact Mini-Hero */}
+            <section className="relative overflow-hidden pt-32 pb-20">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-48 -mt-24 pointer-events-none animate-pulse"></div>
+                <div className="container mx-auto px-6 relative z-10 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+                        Get In Touch
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-tight tracking-tight mb-8">
+                        Connect with <br />
+                        <span className="text-gradient-primary">Our Specialists</span>
                     </h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Have a question or need a quote? We're here to help. 
-                        Reach out to us and our team will respond promptly.
+                    <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                        Have a question about a specific component or a massive project? Our team is ready to deliver the answers you need.
                     </p>
                 </div>
             </section>
@@ -183,14 +187,14 @@ const Contact = () => {
                 <div className="container mx-auto px-4">
                     <div className="grid lg:grid-cols-2 gap-8">
                         {/* Contact Form */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <MessageSquare className="h-5 w-5 text-primary" />
+                        <Card className="border-0 shadow-premium rounded-[3rem] bg-white overflow-hidden group transition-all duration-500 hover:shadow-2xl">
+                            <CardHeader className="p-10 pb-2">
+                                <CardTitle className="flex items-center gap-3 text-2xl font-black text-slate-900">
+                                    <MessageSquare className="h-6 w-6 text-primary" />
                                     Send us a Message
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="p-10 pt-6">
                                 {isSubmitted ? (
                                     <div className="text-center py-12">
                                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">

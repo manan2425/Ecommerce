@@ -59,21 +59,48 @@ export default function AuthLogin() {
 
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">Welcome Back</h1>
-        <p className="text-gray-500">
-          Don&apos;t have an account?
-          <Link className="font-bold ml-2 text-primary hover:underline transition-all" to="/auth/register">Sign Up</Link>
+    <div className="mx-auto w-full max-w-md space-y-8 bg-white/70 backdrop-blur-xl p-10 md:p-12 rounded-[3rem] shadow-premium border border-white/50 relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+      
+      <div className="text-center relative z-10">
+        <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-3 leading-tight">
+          Welcome <span className="text-gradient-primary">Back</span>
+        </h1>
+        <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">
+          The Future of Industrial Excellence
         </p>
       </div>
-      <CommonForm
-        formControls={loginFormControls}
-        buttonText={"Login"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
+      
+      <div className="relative z-10">
+        <CommonForm
+          formControls={loginFormControls}
+          buttonText={"Login to Dashboard"}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={onSubmit}
+        />
+        
+        <div className="mt-6 flex justify-center">
+            <Link 
+                to="/auth/forgot-password" 
+                className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300"
+            >
+                Forgot your password?
+            </Link>
+        </div>
+      </div>
+
+      <div className="pt-8 border-t border-slate-100 text-center relative z-10">
+        <p className="text-sm font-medium text-slate-500">
+          Don&apos;t have an account?
+          <Link 
+            className="font-black ml-2 text-primary hover:text-slate-900 transition-all uppercase tracking-wider text-xs" 
+            to="/auth/register"
+          >
+            Create Account
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

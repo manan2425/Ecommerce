@@ -52,21 +52,39 @@ export default function AuthRegister() {
 
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6 bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">Create Account</h1>
-        <p className="text-gray-500">
-          Already have an account?
-          <Link className="font-bold ml-2 text-primary hover:underline transition-all" to="/auth/login">Login</Link>
+    <div className="mx-auto w-full max-w-md space-y-8 bg-white/70 backdrop-blur-xl p-10 md:p-12 rounded-[3rem] shadow-premium border border-white/50 relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+      
+      <div className="text-center relative z-10">
+        <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-3 leading-tight">
+          Join <span className="text-gradient-primary">Us</span>
+        </h1>
+        <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">
+          Start Your Industrial Journey
         </p>
       </div>
-      <CommonForm
-        formControls={registerFormControls}
-        buttonText={"Sign Up"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
+      
+      <div className="relative z-10">
+        <CommonForm
+          formControls={registerFormControls}
+          buttonText={"Create Your Account"}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={onSubmit}
+        />
+      </div>
+
+      <div className="pt-8 border-t border-slate-100 text-center relative z-10">
+        <p className="text-sm font-medium text-slate-500">
+          Already have an account?
+          <Link 
+            className="font-black ml-2 text-primary hover:text-slate-900 transition-all uppercase tracking-wider text-xs" 
+            to="/auth/login"
+          >
+            Sign In
+          </Link>
+        </p>
+      </div>
     </div>
   )
 }

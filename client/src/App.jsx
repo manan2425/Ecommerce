@@ -2,6 +2,8 @@ import { Route, Routes, Navigate } from "react-router-dom"
 import AuthLayout from "./components/auth/layout"
 import AuthLogin from "./pages/auth/Login"
 import AuthRegister from "./pages/auth/Register"
+import AuthForgotPassword from "./pages/auth/ForgotPassword"
+import AuthResetPassword from "./pages/auth/ResetPassword"
 import AdminLayout from "./components/admin/layout"
 import AdminDashboard from "./pages/admin/dashboard-new"
 import AdminProducts from "./pages/admin/products"
@@ -99,6 +101,8 @@ function App() {
           >
             <Route path="login" element={<AuthLogin />} />
             <Route path="register" element={<AuthRegister />} />
+            <Route path="forgot-password" element={<AuthForgotPassword />} />
+            <Route path="reset-password/:token" element={<AuthResetPassword />} />
           </Route>
 
           <Route path="/admin" element={

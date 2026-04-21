@@ -52,12 +52,13 @@ const MenuItems = () => {
   const navigateToCategory = (currentMenu) => {
 
     sessionStorage.removeItem("filters");
-    const currentFilter = (currentMenu.id !== "home" && currentMenu.id !== "services" && currentMenu.id !== "about" && currentMenu.id !== "contact") ? {
+    const currentFilter = (currentMenu.id !== "home" && currentMenu.id !== "products" && currentMenu.id !== "services" && currentMenu.id !== "about" && currentMenu.id !== "contact") ? {
       category: [currentMenu.id]
     } : null;
 
-
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    if (currentFilter) {
+      sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    }
 
     // Force URL change so ShopList detects it (if already on listing page)
     if (currentMenu.path.includes('listing') && currentFilter) {
@@ -81,20 +82,29 @@ const MenuItems = () => {
         </Label>
       ))}
 
-      {/* Categories Dropdown */}
-      {categoryItems.length > 0 && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="text-sm font-medium cursor-pointer hover:text-primary transition-colors relative group flex items-center gap-1">
-              Categories
-              <ChevronDown className="h-4 w-4" />
-              <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {categoryItems.map(cat => (
+      {/* Explicit Products Link */}
+      <Label
+        className="text-sm font-medium cursor-pointer hover:text-primary transition-colors relative group"
+        onClick={() => navigateToCategory({ id: "products", path: "/shop/listing" })}
+      >
+        Products
+        <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+      </Label>
+
+      {/* Categories Dropdown ALWAYS visible now */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <div className="text-sm font-medium cursor-pointer hover:text-primary transition-colors relative group flex items-center gap-1">
+            Categories
+            <ChevronDown className="h-4 w-4" />
+            <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuLabel>Product Categories</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {categoryItems.length > 0 ? (
+            categoryItems.map(cat => (
               <DropdownMenuItem
                 key={cat.id}
                 onClick={() => navigateToCategory(cat)}
@@ -102,17 +112,21 @@ const MenuItems = () => {
               >
                 {cat.label}
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => navigate('/shop/listing')}
-              className="cursor-pointer font-medium"
-            >
-              View All Products
+            ))
+          ) : (
+            <DropdownMenuItem disabled className="text-gray-400">
+              No categories found
             </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => navigate('/shop/listing')}
+            className="cursor-pointer font-medium text-primary"
+          >
+            View All Products
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* End menu items */}
       {endMenuItems.map(menuItem => (
@@ -319,7 +333,7 @@ export default function ShopHeader() {
 
         <Link to="/shop/home" className="flex items-center gap-2 group">
           <img src="/company_logo.png" alt="Company Logo" className="h-10 w-auto object-contain group-hover:scale-105 transition-transform" />
-          <span className="font-extrabold text-xl bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent tracking-tight hidden md:inline">
+          <span className="font-extrabold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-tight hidden md:inline">
             SHREE MARUTI TRADERS
           </span>
         </Link>

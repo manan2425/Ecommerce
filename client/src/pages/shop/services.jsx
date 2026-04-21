@@ -75,53 +75,47 @@ const ServiceCard = ({ service, onInquiry, isSubmitting }) => {
         const Icon = cat?.icon || Settings;
         return <Icon className="h-6 w-6" />;
     };
-
     return (
-        <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
+        <Card className="flex flex-col h-full hover-lift border-0 shadow-premium bg-white group rounded-[2rem] overflow-hidden">
+            <CardHeader className="p-8 pb-3">
                 <div className="flex items-start justify-between">
-                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                    <div className="p-4 bg-primary/5 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
                         {getCategoryIcon(service.category)}
                     </div>
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge className="bg-slate-100 text-slate-500 hover:bg-slate-200 border-0 px-3 py-1 text-[10px] font-bold uppercase tracking-widest transition-all">
                         {service.category}
                     </Badge>
                 </div>
-                <CardTitle className="text-lg mt-3 line-clamp-2">{service.title}</CardTitle>
+                <CardTitle className="text-xl font-bold mt-6 line-clamp-2 text-slate-900 group-hover:text-primary transition-colors">{service.title}</CardTitle>
             </CardHeader>
-            <CardContent className="flex-grow">
-                <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+            <CardContent className="p-8 pt-0 flex-grow">
+                <p className="text-sm text-slate-500 leading-relaxed font-medium line-clamp-3 mb-6">
                     {service.description}
                 </p>
                 
                 {service.features && service.features.length > 0 && (
-                    <div className="space-y-1.5 mb-4">
+                    <div className="space-y-2 mb-6">
                         {service.features.slice(0, 3).map((feature, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-sm">
-                                <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                            <div key={idx} className="flex items-center gap-3 text-sm text-slate-600 font-bold">
+                                <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
                                 <span className="line-clamp-1">{feature}</span>
                             </div>
                         ))}
-                        {service.features.length > 3 && (
-                            <span className="text-xs text-muted-foreground">
-                                +{service.features.length - 3} more features
-                            </span>
-                        )}
                     </div>
                 )}
 
                 {service.estimatedDuration && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400">
                         <Clock className="h-4 w-4" />
                         <span>Est. Duration: {service.estimatedDuration}</span>
                     </div>
                 )}
             </CardContent>
-            <CardFooter className="flex items-center justify-center border-t pt-4">
+            <CardFooter className="p-6 bg-slate-50/50 border-t border-slate-100 italic">
                 <Button 
                     onClick={() => onInquiry(service)}
                     disabled={isSubmitting}
-                    className="gap-2 w-full"
+                    className="gap-2 w-full py-6 rounded-xl font-bold bg-white text-slate-900 border border-slate-200 hover:bg-primary hover:text-white hover:border-primary shadow-sm hover:shadow-lg transition-all"
                 >
                     {isSubmitting ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -229,15 +223,25 @@ const ShopServices = () => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            {/* Header */}
-            <div className="text-center mb-10">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">Our Services</h1>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Professional engineering and technical services for your industrial needs. 
-                    From technical drawings to complete project management solutions.
-                </p>
-            </div>
+        <div className="min-h-screen bg-mesh">
+            {/* Cinematic Services Mini-Hero */}
+            <section className="relative overflow-hidden pt-32 pb-20">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-48 -mt-24 pointer-events-none animate-pulse"></div>
+                <div className="container mx-auto px-6 relative z-10 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+                        Industrial Engineering
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-tight tracking-tight mb-8">
+                        Technical Solutions <br />
+                        <span className="text-gradient-primary">Built for Precision</span>
+                    </h1>
+                    <p className="text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
+                        Professional engineering services covering everything from mechatronics system design to complete CNC machine kaizen and project management.
+                    </p>
+                </div>
+            </section>
+
+            <div className="container mx-auto px-6 py-12">
 
             {/* Category Tabs */}
             <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-8">
@@ -319,6 +323,7 @@ const ShopServices = () => {
                     </div>
                 </div>
             </div>
+        </div>
 
             {/* Service Inquiry Dialog */}
             <Dialog open={inquiryDialogOpen} onOpenChange={setInquiryDialogOpen}>

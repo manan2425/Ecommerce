@@ -161,7 +161,7 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
                 setSelectedOptions({});
                 setSelectedVariant(null);
             }}>
-                <DialogContent className="productModal sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw] max-h-[90vh] overflow-y-auto">
+                <DialogContent className="productModal sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw] max-h-[90vh] overflow-y-auto border-0 shadow-2xl rounded-[3rem] bg-mesh">
                     <div className="sr-only">
                         <DialogDescription>Product Details</DialogDescription>
                     </div>
@@ -169,7 +169,7 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Left Column - Image */}
                         <div className="rounded-lg">
-                            <div className="relative w-full h-[450px] flex items-center justify-center bg-white border rounded">
+                            <div className="relative w-full h-[500px] flex items-center justify-center bg-white shadow-premium rounded-[2.5rem] border border-slate-100">
                                 <img src={productDetails?.image || Img}
                                     alt={productDetails?.title || "Title"}
                                     className='max-h-[430px] w-auto object-contain'
@@ -204,8 +204,8 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
 
                         {/* Right Column - Details */}
                         <div>
-                            <h1 className="text-3xl font-extrabold">
-                                {productDetails?.title || "Title"}
+                            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">
+                                {productDetails?.title || "Premium Component"}
                             </h1>
 
                             <div className='my-4 flex items-center gap-2'>
@@ -326,8 +326,8 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
                             )}
 
                             <div className="flex items-center justify-between mt-8">
-                                <p className={`text-3xl font-bold text-primary ${productDetails?.salePrice > 0 ? "line-through" : ""}`}>
-                                    {productDetails?.price || "Price"}$
+                                <p className={`text-4xl font-black text-primary ${productDetails?.salePrice > 0 ? "line-through text-slate-300 text-2xl" : ""}`}>
+                                    ${productDetails?.price || "0.00"}
                                 </p>
                                 {(productDetails?.salePrice > 0 && productDetails?.salePrice < productDetails?.price) && (
                                     <p className='text-2xl font-bold text-muted-foreground'>
@@ -401,7 +401,7 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
                                     )}
                                 </div>
 
-                                <Button className="w-full" onClick={() => {
+                                <Button className="w-full py-8 text-lg font-bold rounded-2xl shadow-premium transition-all hover:scale-[1.01] hover:shadow-2xl" onClick={() => {
                                     // Strip subparts from selectedPart to avoid large nested data
                                     const cleanPart = selectedPart ? (() => {
                                         const { subparts, ...partWithoutSubparts } = selectedPart;

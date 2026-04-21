@@ -65,31 +65,34 @@ const AboutUs = () => {
     ];
 
     return (
-        <div className="min-h-screen">
-            {/* Hero Section */}
-            <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background py-20">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                            About <span className="text-primary">Mechatron Solutions</span>
+        <div className="min-h-screen bg-mesh">
+            {/* Cinematic Mini-Hero */}
+            <section className="relative overflow-hidden pt-32 pb-20">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-48 -mt-24 pointer-events-none animate-pulse"></div>
+                <div className="container mx-auto px-6 relative z-10">
+                    <div className="max-w-4xl">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+                            Established 1992
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-tight tracking-tight mb-8">
+                            Engineering the <br />
+                            <span className="text-gradient-primary">Mechatron Legacy</span>
                         </h1>
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                            Since 1992, Mechatron Solutions is one of the leading hardware & electromechanical 
-                            component provider for CNC maintenance, Automation Projects, AMC, and Retrofitting 
-                            of machines for all Industrial applications.
+                        <p className="text-xl text-slate-600 leading-relaxed max-w-2xl">
+                            Since 1992, Mechatron Solutions has defined excellence in industrial automation and CNC engineering. We provide the heartbeat for modern manufacturing.
                         </p>
                     </div>
                 </div>
             </section>
 
             {/* Stats Section */}
-            <section className="py-16 bg-primary text-primary-foreground">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <section className="py-12 bg-white border-y border-slate-100 shadow-sm relative z-20">
+                <div className="container mx-auto px-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
                         {stats.map((stat, index) => (
-                            <div key={index} className="text-center">
-                                <div className="text-4xl md:text-5xl font-bold mb-2">{stat.value}</div>
-                                <div className="text-sm md:text-base opacity-90">{stat.label}</div>
+                            <div key={index} className="text-left group">
+                                <div className="text-4xl md:text-5xl font-black text-slate-900 mb-2 group-hover:text-primary transition-colors duration-500 tracking-tighter">{stat.value}</div>
+                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">{stat.label}</div>
                             </div>
                         ))}
                     </div>
@@ -154,25 +157,25 @@ const AboutUs = () => {
             </section>
 
             {/* Services Grid */}
-            <section className="py-20 bg-muted/30">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold mb-4">Our Services</h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
-                            "Dedicated to improving customer productivity, by providing the best support"
+            <section className="section-spacing relative bg-slate-50/50">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-20 space-y-4">
+                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Our Core Expertise</h2>
+                        <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+                            Dedicated to improving industrial productivity with world-class technical support and engineering innovation.
                         </p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {services.map((service, index) => {
                             const Icon = service.icon;
                             return (
-                                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                                    <CardContent className="pt-6">
-                                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <Icon className="h-6 w-6 text-primary" />
+                                <Card key={index} className="hover-lift border-0 bg-white shadow-premium overflow-hidden group rounded-[2rem]">
+                                    <CardContent className="p-8 flex flex-col items-center text-center">
+                                        <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:rotate-3 shadow-inner">
+                                            <Icon className="h-8 w-8 transition-transform duration-500" />
                                         </div>
-                                        <h3 className="font-semibold text-sm mb-1">{service.title}</h3>
-                                        <p className="text-xs text-muted-foreground">{service.desc}</p>
+                                        <h3 className="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
+                                        <p className="text-sm text-slate-500 leading-relaxed font-medium">{service.desc}</p>
                                     </CardContent>
                                 </Card>
                             );
@@ -269,25 +272,25 @@ const AboutUs = () => {
             </section>
 
             {/* Our Values */}
-            <section className="py-20 bg-muted/50">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold mb-4">Our Core Values</h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
-                            These principles guide everything we do and define who we are as a company.
+            <section className="section-spacing bg-white">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-20 space-y-4">
+                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Our Core Values</h2>
+                        <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+                            Principles that guide our daily operations and define the Mechatron identity.
                         </p>
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {values.map((value, index) => {
                             const Icon = value.icon;
                             return (
-                                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                                    <CardContent className="pt-6">
-                                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Icon className="h-8 w-8 text-primary" />
+                                <Card key={index} className="hover-lift border-0 bg-slate-50 shadow-sm overflow-hidden group rounded-[2.5rem]">
+                                    <CardContent className="p-10 flex flex-col items-center text-center">
+                                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-8 shadow-premium group-hover:bg-primary group-hover:text-white transition-all duration-700">
+                                            <Icon className="h-10 w-10 transition-transform duration-700 group-hover:scale-110" />
                                         </div>
-                                        <h3 className="text-lg font-semibold mb-2">{value.title}</h3>
-                                        <p className="text-sm text-muted-foreground">{value.description}</p>
+                                        <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-primary transition-colors">{value.title}</h3>
+                                        <p className="text-sm text-slate-500 leading-relaxed font-medium">{value.description}</p>
                                     </CardContent>
                                 </Card>
                             );

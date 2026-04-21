@@ -1,5 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { BabyIcon, BookHeart, ChevronLeftIcon, ChevronRightIcon, FootprintsIcon, ShirtIcon, WatchIcon, Package } from "lucide-react";
+import { 
+  BabyIcon, 
+  BookHeart, 
+  ChevronLeftIcon, 
+  ChevronRightIcon, 
+  FootprintsIcon, 
+  ShirtIcon, 
+  WatchIcon, 
+  Package, 
+  ShieldCheck, 
+  Zap, 
+  Truck, 
+  HeadphonesIcon,
+  Star
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -182,39 +196,129 @@ export default function ShopHome() {
 
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-mesh">
 
-      {/* White Background Banner */}
-      <div className="relative w-full h-[400px] bg-white flex items-center justify-center">
-        <div className="text-center px-4">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">Welcome to E-Commerce</h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto">Discover the latest trends in fashion, accessories, and more. Shop now and elevate your style.</p>
-          <Button className="text-lg px-8 py-6 rounded-full shadow-xl hover:scale-105 transition-transform" onClick={() => navigate("/shop/listing")}>
-            Shop Now
-          </Button>
+      {/* Cinematic Visual Excellence Hero Section */}
+      <div className="relative w-full min-h-[700px] flex items-center justify-center overflow-hidden">
+        {/* Atmospheric Background Elements */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -mr-48 -mt-24 pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-100/50 rounded-full blur-[100px] -ml-24 -mb-24 pointer-events-none"></div>
+
+        <div className="w-full px-6 md:px-16 grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-12 items-center py-16 relative z-10">
+          <div className="flex flex-col items-start text-left space-y-6 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider uppercase transition-all hover:bg-primary/20 cursor-default">
+              <Star className="w-3.5 h-3.5 fill-primary" />
+              Trusted by 5,000+ Industrial Partners
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
+              Powering the <br />
+              <span className="text-gradient-primary">Industrial Future</span>
+            </h1>
+            
+            <p className="text-lg text-slate-600 leading-relaxed max-w-lg">
+              Shree Maruti Traders delivers high-precision industrial electronics and electrical solutions that define reliability. Elevate your engineering standards today.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <Button 
+                size="lg"
+                className="text-base px-8 py-7 rounded-xl shadow-premium hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500 bg-primary text-white border-0 w-full sm:w-auto font-bold group" 
+                onClick={() => navigate("/shop/listing")}
+              >
+                Shop Now
+                <ChevronRightIcon className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg"
+                className="text-base px-8 py-7 rounded-xl border-slate-200 text-slate-800 bg-white/50 backdrop-blur-md hover:bg-white hover:text-primary transition-all duration-500 w-full sm:w-auto font-bold" 
+                onClick={() => navigate("/shop/services")}
+              >
+                Our Services
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-8 pt-8 w-full border-t border-slate-100">
+              <div>
+                <p className="text-3xl font-black text-slate-900 tracking-tighter">10k+</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Products</p>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-slate-900 tracking-tighter">24/7</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Support</p>
+              </div>
+              <div>
+                <p className="text-3xl font-black text-slate-900 tracking-tighter">100%</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">Genuine</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative group lg:block hidden max-w-md ml-auto text-center">
+            <div className="absolute inset-0 bg-primary/10 rounded-[3rem] blur-[50px] transition-all duration-700 -z-10 translate-y-6 translate-x-6"></div>
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/50 shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
+              <img 
+                src="/hero-industrial.png" 
+                alt="Maruti Traders Premium Electronics" 
+                className="w-full h-auto object-cover aspect-[4/5] object-center transition-all duration-1000"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/75 via-slate-900/30 to-transparent p-8 pt-16">
+                <p className="text-white text-base font-medium italic leading-relaxed">
+                  "Excellence in every electrical connection we power."
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Section */}
-      <section className="py-16 bg-gray-50">
+      {/* The Maruti Advantage Section */}
+      <section className="section-spacing bg-white relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: ShieldCheck, title: "Genuine Quality", desc: "100% original products sourced directly from manufacturers." },
+              { icon: Zap, title: "Rapid Fulfillment", desc: "Swift processing and delivery for all industrial orders." },
+              { icon: HeadphonesIcon, title: "Expert Support", desc: "Direct technical assistance for electronics configuration." },
+              { icon: Truck, title: "Pan-India Shipping", desc: "Reliable logistics partners for safe transit of delicate parts." }
+            ].map((item, i) => (
+              <div key={i} className="flex flex-col items-center text-center p-8 rounded-3xl hover:bg-slate-50 transition-colors duration-500">
+                <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-6">
+                  <item.icon className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{item.title}</h3>
+                <p className="text-slate-500 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Category Section with Visual Depth */}
+      <section className="section-spacing bg-slate-50/50">
 
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-extrabold text-center mb-12 text-gray-800">
-            Shop By Category
-          </h2>
+          <div className="flex flex-col items-center text-center mb-20 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+              Our Specialties
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl">
+              From microscopic components to heavy-duty industrial systems, we cover every engineering vertical.
+            </p>
+          </div>
 
-          <div className=" grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 ">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
             {
               categoriesWithIcon.map((item, index) => {
                 return (
-                  <Card className="cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-none bg-white overflow-hidden group" key={index} onClick={() => handleNavigatetoListingPage(item, "category")} >
-                    <CardContent className="flex flex-col items-center justify-center p-8 group-hover:bg-primary/5 transition-colors">
-                      {
-                        <>
-                          <item.icon className="w-14 h-14 mb-4 text-primary group-hover:scale-110 transition-transform duration-300" />
-                          <span className="font-bold text-lg text-gray-700 group-hover:text-primary transition-colors">{item.label}</span>
-                        </>
-                      }
+                  <Card className="hover-lift cursor-pointer border-0 bg-white shadow-premium overflow-hidden group rounded-[2.5rem]" key={index} onClick={() => handleNavigatetoListingPage(item, "category")} >
+                    <CardContent className="flex flex-col items-center justify-center p-12 relative h-full">
+                      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                      <div className="w-20 h-20 rounded-full bg-slate-50 group-hover:bg-primary group-hover:text-white flex items-center justify-center mb-6 transition-all duration-700 shadow-inner">
+                        <item.icon className="w-10 h-10 transition-transform duration-700 group-hover:rotate-12" />
+                      </div>
+                      <span className="font-bold text-xl text-slate-800 group-hover:text-primary transition-colors text-center">{item.label}</span>
                     </CardContent>
                   </Card>
                 )
@@ -225,33 +329,49 @@ export default function ShopHome() {
 
       </section>
 
-      {/* Fetch AllProducts */}
-      <section className="py-12">
+      {/* Featured Products Section */}
+      <section className="section-spacing bg-white">
 
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Feature Products
-          </h2>
-          <div className="px-5  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 px-4">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                Featured Innovation
+              </h2>
+              <p className="text-lg text-slate-500 max-w-lg">Hand-picked components that are currently shaping the industry.</p>
+            </div>
+            <Button 
+              variant="link" 
+              className="text-primary hover:text-primary/80 font-bold text-lg group mt-6 md:mt-0" 
+              onClick={() => navigate("/shop/listing")}
+            >
+              See the full collection 
+              <ChevronRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
             {
               productList && productList.length > 0 ?
                 (
                   productList.slice(0, 4).map((productItem, index) => {
                     return (
-                      <>
+                      <div key={productItem.id || index} className="hover-lift h-full p-2">
                         <ShoppingProductTile
                           product={productItem}
-                          key={index}
                           handleGetProductDetails={handleGetProductDetails}
                           handleAddToCart={handleAddToCart}
                         />
-                      </>
+                      </div>
                     )
                   }))
                 :
-                <h3>
-                  No Products Present Currently
-                </h3>
+                <div className="col-span-full py-24 text-center glass rounded-3xl border-slate-100 flex flex-col items-center">
+                  <Package className="w-20 h-20 text-slate-200 mb-6" />
+                  <h3 className="text-2xl font-bold text-slate-400">
+                    Our inventory is reaching your screen shortly.
+                  </h3>
+                </div>
             }
           </div>
         </div>
