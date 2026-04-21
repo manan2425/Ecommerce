@@ -15,6 +15,10 @@ const PORT = process.env.PORT || 5001;
 
 // Simple router object to map paths to handlers
 const routes = {
+  'GET /api/ping': (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'pong', timestamp: new Date().toISOString(), message: "API is reachable! 🚀" }));
+  },
   'POST /api/auth/register': registerUser,
   'POST /api/auth/login': login,
   'POST /api/auth/logout': logout,
@@ -152,24 +156,29 @@ const DataBaseConnection = async () => {
 
 DataBaseConnection();
 
-// Socket.io
-const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    methods: ["GET", "POST"],
-    credentials: true
-  }
-});
-
-io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+// Socket.io - Only initialize in development or on real servers (not Serverless)
+let io;
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  io = new Server(httpServer, {
+    cors: {
+      origin: getAllowedOrigin(),
+      methods: ["GET", "POST"],
+      credentials: true
+    }
   });
-});
 
-setIO(io);
+  io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id);
+
+    socket.on('disconnect', () => {
+      console.log('Client disconnected:', socket.id);
+    });
+  });
+
+  setIO(io);
+} else {
+  console.log('Socket.io disabled for Serverless production');
+}
 
 export { io };
 
