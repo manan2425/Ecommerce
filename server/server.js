@@ -6,7 +6,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 // Import controllers directly (you'll need to adapt them for plain Node.js)
-import { registerUser, login, logout, forgotPassword, resetPassword } from './controllers/auth/auth-controller.js';
+import { registerUser, login, logout, forgotPassword, resetPassword, authMiddleware } from './controllers/auth/auth-controller.js';
 // Import other controllers as needed...
 
 import { setIO } from "./helpers/socket.js";
@@ -20,7 +20,17 @@ const routes = {
   'POST /api/auth/logout': logout,
   'POST /api/auth/forgot-password': forgotPassword,
   'POST /api/auth/reset-password': resetPassword,
-  // Add all other routes here...
+  'GET /api/auth/check-auth': async (req, res) => {
+    // Manually apply authMiddleware for this route in the HTTP server
+    await authMiddleware(req, res, () => {
+      const user = req.user;
+      res.status(200).json({
+        success: true,
+        message: "User Authenticated",
+        user
+      });
+    });
+  },
 };
 
 // Function to parse JSON body
@@ -39,11 +49,15 @@ const parseBody = (req) => {
   });
 };
 
-// CORS headers
+// CORS headers - Support both CLIENT_URL and CLIENT_BASE_URL (as suggested in deployment guide)
+const getAllowedOrigin = () => {
+  return process.env.CLIENT_URL || process.env.CLIENT_BASE_URL || 'http://localhost:5173';
+};
+
 const corsHeaders = {
-  'Access-Control-Allow-Origin': process.env.CLIENT_URL || 'http://localhost:5173',
+  'Access-Control-Allow-Origin': getAllowedOrigin(),
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cache-Control, X-Requested-With',
   'Access-Control-Allow-Credentials': 'true'
 };
 

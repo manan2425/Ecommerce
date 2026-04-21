@@ -36,7 +36,7 @@ import { checkAuth } from "./store/auth-slice"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useNavigate } from "react-router-dom"
 import { Toaster } from "./components/ui/toaster"
-import { initializeContentProtection } from "./lib/contentProtection"
+// import { initializeContentProtection } from "./lib/contentProtection"
 import { initSocket } from "./lib/socket"
 
 function App() {
@@ -47,8 +47,6 @@ function App() {
   const { isAuthenticated, user, isLoading } = useSelector(state => state.auth);
 
   useEffect(() => {
-    // Initialize content protection when app loads
-    initializeContentProtection();
     // Initialize socket connection for real-time updates
     initSocket();
   }, []);
