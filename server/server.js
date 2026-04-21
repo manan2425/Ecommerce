@@ -68,6 +68,23 @@ app.use(express.json());
 // Main Request Handler Export for Vercel
 export default app;
 
+// Initiate connection but don't block at top level
+DataBaseConnection();
+
+// Middleware to ensure DB is connected before processing requests
+const ensureDbConnected = async (req, res, next) => {
+    try {
+        if (!isConnected) {
+            await DataBaseConnection();
+        }
+        next();
+    } catch (error) {
+        res.status(503).json({ success: false, message: "Database connection in progress, please try again." });
+    }
+};
+
+app.use(ensureDbConnected);
+
 // Routes
 app.get("/api/ping", (req, res) => {
     res.status(200).json({ status: "pong", message: "Express backend is alive! 🚀" });

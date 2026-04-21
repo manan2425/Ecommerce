@@ -229,7 +229,7 @@ export const getFilteredProducts = async(req,res)=>{
         }
 
 
-        const products = await Product.find(filters).sort(sort);
+        const products = await Product.find(filters).sort(sort).limit(50);
         return res.status(200).json({
             success : true,
             message : "Products Data Found Successfully",

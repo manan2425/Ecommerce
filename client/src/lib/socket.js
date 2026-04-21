@@ -21,8 +21,8 @@ export const initSocket = () => {
     if (!socket) {
         socket = io(SOCKET_URL, {
             withCredentials: true,
-            autoConnect: true,
-            reconnection: true,
+            autoConnect: import.meta.env.DEV, // Only auto-connect in development
+            reconnection: import.meta.env.DEV,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
         });
