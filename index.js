@@ -1,13 +1,9 @@
-import app from './server/server.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const PORT = process.env.PORT || 8080;
+// We just need to import the server. 
+// The server.js file already handles the database connection 
+// and starting the httpServer for both Express and Socket.io.
+import './server/server.js';
 
-// Note: httpServer was used in server.js for socket.io. 
-// If you use socket.io, you should import the server instance, not just the app.
-// But for a standard Express deployment on Hostinger, listening to the app is fine.
-
-app.listen(PORT, () => {
-    console.log(`Server is running properly on port ${PORT}`);
-});
+console.log('Root index.js entry point loaded successfully');

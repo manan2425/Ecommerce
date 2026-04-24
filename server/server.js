@@ -74,6 +74,28 @@ app.use(express.json());
 // Main Request Handler Export for Vercel
 export default app;
 
+// MongoDB Connection
+let isConnected = false;
+async function DataBaseConnection() {
+    if (isConnected) return;
+    const mongoUrl = process.env.MONGODB_URL;
+    if (!mongoUrl) {
+        console.error("MONGODB_URL is not set!");
+        return;
+    }
+    try {
+        await mongoose.connect(mongoUrl, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000,
+        });
+        isConnected = true;
+        console.log(`MongoDB connected: ${mongoose.connection.name}`);
+    } catch (error) {
+        console.error("DB Error:", error.message);
+    }
+}
+
 // Initiate connection but don't block at top level
 DataBaseConnection();
 
@@ -121,26 +143,7 @@ app.use("/api/shop/services", shopServiceRouter);
 app.use("/api/shop/service-inquiry", shopServiceInquiryRouter);
 
 // MongoDB Connection
-let isConnected = false;
-const DataBaseConnection = async () => {
-    if (isConnected) return;
-    const mongoUrl = process.env.MONGODB_URL;
-    if (!mongoUrl) {
-        console.error("MONGODB_URL is not set!");
-        return;
-    }
-    try {
-        await mongoose.connect(mongoUrl, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000,
-        });
-        isConnected = true;
-        console.log(`MongoDB connected: ${mongoose.connection.name}`);
-    } catch (error) {
-        console.error("DB Error:", error.message);
-    }
-};
+// Removed and moved up
 
 DataBaseConnection();
 
