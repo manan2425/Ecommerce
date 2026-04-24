@@ -11,7 +11,7 @@ export default function ShopLayout() {
   }, []);
 
   return (
-    <div className="flex flex-col bg-white h-screen overflow-y-scroll">
+    <div className="flex flex-col bg-white min-h-screen">
       {/* common header */}
       <ShopHeader />
       <main className="flex flex-col w-full ">

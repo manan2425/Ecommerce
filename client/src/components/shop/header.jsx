@@ -20,7 +20,7 @@ import { Label } from "../ui/label";
 import axios from "axios";
 
 
-const MenuItems = () => {
+const MenuItems = ({ setOpen }) => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -65,6 +65,11 @@ const MenuItems = () => {
       navigate(`${currentMenu.path}?category=${currentMenu.id}`);
     } else {
       navigate(currentMenu.path);
+    }
+
+    // Close mobile menu if setOpen is provided
+    if (setOpen) {
+      setOpen(false);
     }
   }
 
@@ -274,7 +279,14 @@ export default function ShopHeader() {
   const [keyword, setKeyword] = useState("");
   const [searchParams] = useSearchParams();
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false); // Mobile menu state
   const searchRef = useRef(null);
+  const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setOpenMenu(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     setKeyword(searchParams.get('keyword') || "");
@@ -339,7 +351,7 @@ export default function ShopHeader() {
         </Link>
 
         <div className="hidden lg:block">
-          <MenuItems />
+          <MenuItems setOpen={setOpenMenu} />
         </div>
 
         {/* Enhanced Search Bar */}
@@ -387,7 +399,7 @@ export default function ShopHeader() {
           )}
         </div>
 
-        <Sheet>
+        <Sheet open={openMenu} onOpenChange={setOpenMenu}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden border-none hover:bg-gray-100">
               <Menu className="h-6 w-6" />
@@ -416,7 +428,7 @@ export default function ShopHeader() {
                   <Search className="w-5 h-5" />
                 </Button>
               </div>
-              <MenuItems />
+              <MenuItems setOpen={setOpenMenu} />
               <HeaderRightContent />
             </div>
           </SheetContent>

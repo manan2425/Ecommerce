@@ -30,6 +30,12 @@ export default function ShopList() {
   const navigate = useNavigate();
   const { productList, productDetails } = useSelector(state => state.shopProducts);
   const [filters, setFilters] = useState(() => {
+    // Priority 1: URL search params
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      return { category: categoryParam.split(',') };
+    }
+    // Priority 2: Session storage (only for legacy compatibility/internal transitions)
     try {
       return JSON.parse(sessionStorage.getItem("filters")) || {};
     } catch (e) {
@@ -37,7 +43,6 @@ export default function ShopList() {
     }
   });
   const [sort, setSort] = useState('price-lowtohigh');
-  const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { user, isAuthenticated } = useSelector(state => state.auth);
   const { toast } = useToast();
@@ -51,7 +56,11 @@ export default function ShopList() {
     const getFilteredData = async () => {
       try {
         if (filters !== null && sort !== "") {
-          const response = await dispatch(fetchAllFilteredProducts({ filterParams: filters, sortParams: sort, keyword: searchParams.get('keyword') }));
+          await dispatch(fetchAllFilteredProducts({ 
+            filterParams: filters, 
+            sortParams: sort, 
+            keyword: searchParams.get('keyword') 
+          }));
         }
       } catch (error) {
         console.log(error);
@@ -60,26 +69,39 @@ export default function ShopList() {
     getFilteredData();
   }, [dispatch, sort, filters, searchParams]);
 
-  // For Filter Session Storage (Reload on URL change)
+  // Sync filters from URL when it changes (e.g. back button)
   useEffect(() => {
-    setSort("price-lowtohigh");
-    try {
-      setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-    } catch (e) {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      const urlFilters = { category: categoryParam.split(',') };
+      // Only update if filters are actually different to avoid cycles
+      if (JSON.stringify(urlFilters) !== JSON.stringify(filters)) {
+        setFilters(urlFilters);
+      }
+    } else if (Object.keys(filters).length > 0 && !searchParams.get('keyword')) {
+      // If URL is empty and we have filters, and it's not a keyword search, clear filters
+      // This handles clicking "Home" or clear all
       setFilters({});
     }
-  }, [location.search]);
+  }, [searchParams]);
 
-  // For URL
+  // For URL Sync (when filters change via UI)
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
       const createQueryString = createSearchParamsHelper(filters);
-      setSearchParams(new URLSearchParams(createQueryString));
+      const newParams = new URLSearchParams(createQueryString);
+      
+      // Use replace: true if the filters are the same to avoid pushing multiple entries for the same state
+      if (searchParams.toString() !== newParams.toString()) {
+        setSearchParams(newParams, { replace: false });
+      }
     } else {
-      const createQueryString = createSearchParamsHelper("");
-      setSearchParams(new URLSearchParams(createQueryString));
+      // Don't clear searchParams if there's a keyword
+      if (!searchParams.get('keyword') && searchParams.toString() !== "") {
+        setSearchParams(new URLSearchParams(""), { replace: true });
+      }
     }
-  }, [filters, setSearchParams]);
+  }, [filters]);
 
   useEffect(() => {
     if (productDetails !== null) {
