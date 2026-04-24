@@ -1,5 +1,11 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 import express from "express";
 import mongoose from "mongoose";
@@ -7,12 +13,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 
 // Configuration
 import { setIO } from "./helpers/socket.js";
@@ -45,6 +45,16 @@ const PORT = process.env.PORT || 5001;
 // CORS Helper
 const getAllowedOrigin = () => {
     return process.env.CLIENT_URL || process.env.CLIENT_BASE_URL || 'http://localhost:5173';
+};
+
+// Get allowed origins for Socket.IO (supports multiple origins)
+const getAllowedOrigins = () => {
+    const origins = ['http://localhost:5173', 'http://localhost:3000']; // Development origins
+    const prodOrigin = process.env.CLIENT_URL || process.env.CLIENT_BASE_URL;
+    if (prodOrigin) {
+        origins.push(prodOrigin);
+    }
+    return origins;
 };
 
 // Middleware
@@ -151,7 +161,7 @@ DataBaseConnection();
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
     const io = new Server(httpServer, {
         cors: {
-            origin: getAllowedOrigin(),
+            origin: getAllowedOrigins(),
             methods: ["GET", "POST"],
             credentials: true,
         },

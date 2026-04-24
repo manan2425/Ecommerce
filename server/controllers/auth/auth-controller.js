@@ -84,9 +84,18 @@ export const login = async(req,res)=>{
                     return res.status(403).json({success:false,message:"Invalid Password or Email"});
                 }
                 const token = jwt.sign({
-                    id : checkUser._id,role : checkUser.role,email : checkUser.email,
-                    userName : checkUser.userName
-                },secretKey,{expiresIn : "60m"});
+                    id: checkUser._id,
+                    role: checkUser.role,
+                    email: checkUser.email,
+                    userName: checkUser.userName
+                }, secretKey, { expiresIn: "60m" });
+
+                const cookieOptions = {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 60 * 60 * 1000 // 1 hour
+                };
 
                 // Log the login activity
                 try {
@@ -102,7 +111,7 @@ export const login = async(req,res)=>{
                     // Don't fail the login if activity logging fails
                 }
 
-                res.cookie("token", token,{httpOnly:true,secure:false}).status(200).json({
+                res.cookie("token", token, cookieOptions).status(200).json({
                     success : true,
                     message : "Login Successfully",
                     user : {
@@ -155,9 +164,13 @@ export const logout = async(req,res)=>{
         }
 
         console.log("Here Error");
-        res.clearCookie("token").json({
-            success : true,
-            message : "Logged Out Successfully"
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax"
+        }).json({
+            success: true,
+            message: "Logged Out Successfully"
         });
   
         

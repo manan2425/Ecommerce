@@ -8,6 +8,12 @@ export const getDashboardAnalytics = async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
 
     // Total users
     const totalUsers = await User.countDocuments();
