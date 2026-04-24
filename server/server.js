@@ -95,8 +95,6 @@ async function DataBaseConnection() {
     }
     try {
         await mongoose.connect(mongoUrl, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
             serverSelectionTimeoutMS: 10000,
         });
         isConnected = true;
