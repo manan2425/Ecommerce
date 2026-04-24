@@ -9,6 +9,11 @@ const __dirname = path.dirname(__filename);
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 
+console.log(`Loaded environment file: ${envFile}`);
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`MONGODB_URL: ${process.env.MONGODB_URL ? 'Set' : 'Not set'}`);
+console.log(`JWT_SECRET: ${process.env.JWT_SECRET ? 'Set' : 'Not set'}`);
+
 import express from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
@@ -91,18 +96,21 @@ let isConnected = false;
 async function DataBaseConnection() {
     if (isConnected) return;
     const mongoUrl = process.env.MONGODB_URL;
+    console.log("Attempting to connect to MongoDB...");
     if (!mongoUrl) {
         console.error("MONGODB_URL is not set!");
         return;
     }
+    console.log("MongoDB URL found, connecting...");
     try {
         await mongoose.connect(mongoUrl, {
             serverSelectionTimeoutMS: 10000,
         });
         isConnected = true;
-        console.log(`MongoDB connected: ${mongoose.connection.name}`);
+        console.log(`MongoDB connected successfully: ${mongoose.connection.name}`);
     } catch (error) {
-        console.error("DB Error:", error.message);
+        console.error("DB Connection Error:", error.message);
+        console.error("Full error:", error);
     }
 }
 
@@ -126,6 +134,16 @@ app.use(ensureDbConnected);
 // Routes
 app.get("/api/ping", (req, res) => {
     res.status(200).json({ status: "pong", message: "Express backend is alive! 🚀" });
+});
+
+app.get("/api/test", (req, res) => {
+    res.status(200).json({
+        NODE_ENV: process.env.NODE_ENV,
+        MONGODB_URL: process.env.MONGODB_URL ? "Set" : "Not set",
+        JWT_SECRET: process.env.JWT_SECRET ? "Set" : "Not set",
+        DB_CONNECTED: isConnected,
+        PORT: process.env.PORT
+    });
 });
 
 app.use("/api/auth", authRoutes);
