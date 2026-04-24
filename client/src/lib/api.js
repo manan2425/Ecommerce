@@ -21,7 +21,7 @@ const getApiUrl = () => {
 const api = axios.create({
   baseURL: `${getApiUrl()}/api`,
   withCredentials: true,
-  timeout: 10000, // 10 second timeout
+  timeout: 30000, // 30 second timeout
 });
 
 // Response interceptor to handle 401 (Unauthorized) errors

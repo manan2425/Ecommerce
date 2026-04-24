@@ -87,7 +87,7 @@ async function DataBaseConnection() {
         await mongoose.connect(mongoUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000,
+            serverSelectionTimeoutMS: 10000,
         });
         isConnected = true;
         console.log(`MongoDB connected: ${mongoose.connection.name}`);

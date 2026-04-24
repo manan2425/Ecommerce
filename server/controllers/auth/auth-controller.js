@@ -7,7 +7,7 @@ import UserActivity from "../../models/UserActivity.js";
 
 
 // Secret Key
-const secretKey = "CLIENT_SECRET_KEY";
+const secretKey = process.env.JWT_SECRET || "CLIENT_SECRET_KEY";
 
 // Register
 export const registerUser = async(req,res)=>{
