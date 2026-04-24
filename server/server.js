@@ -104,7 +104,8 @@ async function DataBaseConnection() {
     console.log("MongoDB URL found, connecting...");
     try {
         await mongoose.connect(mongoUrl, {
-            serverSelectionTimeoutMS: 10000,
+            serverSelectionTimeoutMS: 30000,
+            bufferCommands: false,
         });
         isConnected = true;
         console.log(`MongoDB connected successfully: ${mongoose.connection.name}`);
