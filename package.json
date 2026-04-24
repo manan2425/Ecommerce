@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "cd client && npm install && npm run build",
-    "postinstall": "cd client && npm install && npm run build"
+    "build": "echo 'Client already built - skipping build step'",
+    "postinstall": "echo 'Skipping client build - using pre-built files'"
   },
   "engines": {
     "node": ">=18"
