@@ -21,5 +21,5 @@ const UserActivitySchema = new mongoose.Schema({
     details: mongoose.Schema.Types.Mixed
 }, { timestamps: true });
 
-const UserActivity = mongoose.model('UserActivity', UserActivitySchema);
+const UserActivity = mongoose.models.UserActivity || mongoose.model('UserActivity', UserActivitySchema);
 export default UserActivity;

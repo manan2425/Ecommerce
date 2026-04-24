@@ -11,6 +11,7 @@ const secretKey = process.env.JWT_SECRET || "CLIENT_SECRET_KEY";
 
 // Register
 export const registerUser = async (req, res) => {
+    console.log("Registration attempt for:", req.body?.email);
     try {
         const { userName, email, password } = req.body;
 
@@ -45,16 +46,18 @@ export const registerUser = async (req, res) => {
         });
 
         await newUser.save();
-        res.status(200).json({
+        console.log("User registered successfully:", trimmedEmail);
+        
+        return res.status(200).json({
             success: true,
             message: "Registration Successful"
         });
 
     } catch (error) {
-        console.error("Registration Error:", error);
-        res.status(500).json({
+        console.error("CRITICAL Registration Error:", error);
+        return res.status(500).json({
             success: false,
-            message: "Some Error Occurred During Registration",
+            message: "Internal Server Error during registration",
             error: error.message
         });
     }
@@ -62,11 +65,12 @@ export const registerUser = async (req, res) => {
 
 // Login
 export const login = async (req, res) => {
+    console.log("Login attempt started for body:", JSON.stringify(req.body));
     try {
         const { email, password } = req.body;
 
-        // Robust check for missing or non-string fields
         if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
+            console.log("Login failed: Missing or invalid fields");
             return res.status(406).json({ success: false, message: "Email and password are required" });
         }
 
@@ -74,25 +78,51 @@ export const login = async (req, res) => {
         const trimmedPassword = password.trim();
 
         if (trimmedEmail.length === 0 || trimmedPassword.length === 0) {
+            console.log("Login failed: Empty fields after trim");
             return res.status(406).json({ success: false, message: "Fields cannot be empty" });
         }
 
-        const checkUser = await User.findOne({ email: trimmedEmail });
+        console.log("Finding user with email:", trimmedEmail);
+        let checkUser;
+        try {
+            checkUser = await User.findOne({ email: trimmedEmail });
+        } catch (dbError) {
+            console.error("Database error during User.findOne:", dbError);
+            throw new Error("Database error during user lookup");
+        }
+
         if (!checkUser) {
+            console.log("Login failed: User not found");
             return res.status(404).json({ success: false, message: "User Not Found, Please Register" });
         }
 
-        const checkPassword = await bcrypt.compare(trimmedPassword, checkUser.password);
+        console.log("Comparing passwords for user:", checkUser._id);
+        let checkPassword;
+        try {
+            checkPassword = await bcrypt.compare(trimmedPassword, checkUser.password);
+        } catch (bcryptError) {
+            console.error("Bcrypt error during compare:", bcryptError);
+            throw new Error("Error verifying password");
+        }
+
         if (!checkPassword) {
+            console.log("Login failed: Invalid password");
             return res.status(403).json({ success: false, message: "Invalid Password or Email" });
         }
 
-        const token = jwt.sign({
-            id: checkUser._id,
-            role: checkUser.role,
-            email: checkUser.email,
-            userName: checkUser.userName
-        }, secretKey, { expiresIn: "60m" });
+        console.log("Generating JWT token...");
+        let token;
+        try {
+            token = jwt.sign({
+                id: checkUser._id,
+                role: checkUser.role,
+                email: checkUser.email,
+                userName: checkUser.userName
+            }, secretKey, { expiresIn: "60m" });
+        } catch (jwtError) {
+            console.error("JWT signing error:", jwtError);
+            throw new Error("Error generating security token");
+        }
 
         const cookieOptions = {
             httpOnly: true,
@@ -102,6 +132,7 @@ export const login = async (req, res) => {
         };
 
         // Log the login activity
+        console.log("Logging activity...");
         try {
             const activity = new UserActivity({
                 userId: checkUser._id,
@@ -110,10 +141,12 @@ export const login = async (req, res) => {
                 userAgent: req.headers['user-agent']
             });
             await activity.save();
+            console.log("Activity logged successfully");
         } catch (activityError) {
             console.error('Error logging login activity:', activityError);
         }
 
+        console.log("Setting cookie and sending response...");
         res.cookie("token", token, cookieOptions).status(200).json({
             success: true,
             message: "Login Successfully",
@@ -124,56 +157,56 @@ export const login = async (req, res) => {
                 id: checkUser._id
             }
         });
+        console.log("Login response sent successfully");
 
     } catch (error) {
-        console.error("Login Error:", error);
+        console.error("CRITICAL Login Error:", error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            error: error.message
+            error: error.message,
+            stack: process.env.NODE_ENV !== "production" ? error.stack : undefined
         });
     }
 }
 
 // Logout
-export const logout = async(req,res)=>{
-    try{
+export const logout = async (req, res) => {
+    try {
+        console.log("Logout attempt...");
         // Log the logout activity if user is authenticated
-        if (req.user && req.user._id) {
+        if (req.user && (req.user.id || req.user._id)) {
+            const userId = req.user.id || req.user._id;
             try {
                 const activity = new UserActivity({
-                    userId: req.user._id,
+                    userId: userId,
                     activityType: 'logout',
-                    ipAddress: req.ip || req.connection.remoteAddress,
+                    ipAddress: req.ip || (req.connection && req.connection.remoteAddress) || (req.socket && req.socket.remoteAddress),
                     userAgent: req.headers['user-agent']
                 });
                 await activity.save();
+                console.log("Logout activity logged for user:", userId);
             } catch (activityError) {
-                console.log('Error logging logout activity:', activityError);
-                // Don't fail the logout if activity logging fails
+                console.error('Error logging logout activity:', activityError);
             }
         }
 
-        console.log("Here Error");
-        res.clearCookie("token", {
+        return res.clearCookie("token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax"
-        }).json({
+        }).status(200).json({
             success: true,
             message: "Logged Out Successfully"
         });
-  
-        
- 
 
-    }catch(error){
-        console.log(error.message);
+    } catch (error) {
+        console.error("CRITICAL Logout Error:", error);
         return res.status(500).json({
             success: false,
-            message: "Some Error Occured"
+            message: "Internal Server Error during logout",
+            error: error.message
         });
-
     }
 }
 
