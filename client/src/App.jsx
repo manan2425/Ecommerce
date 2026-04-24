@@ -33,10 +33,9 @@ import UnAuthPage from "./pages/unauth-page"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
 import { checkAuth } from "./store/auth-slice"
-import { Skeleton } from "@/components/ui/skeleton"
+import FullPageLoader from "./components/common/full-page-loader"
 import { useNavigate } from "react-router-dom"
 import { Toaster } from "./components/ui/toaster"
-// import { initializeContentProtection } from "./lib/contentProtection"
 import { initSocket } from "./lib/socket"
 
 function App() {
@@ -52,27 +51,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        const response = await dispatch(checkAuth());
-
-
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    checkAuthentication();
+    // Only dispatch checkAuth once on mount
+    dispatch(checkAuth());
   }, [dispatch]);
 
 
   // Authentication routing is handled by CheckAuth wrapper on the routes.
-  // Remove the unconditional cookie redirect to avoid blocking legitimate
-  // public routes (for example: /auth/register).
-
-  // Show loading skeleton only for a brief moment while checking auth
-  // But allow public routes to render even during loading
+  // Show premium loading page while checking initial auth status
   if (isLoading) {
-    return <Skeleton className="w-[800] bg-black h-[600px]" />;
+    return <FullPageLoader />;
   }
 
   return (
