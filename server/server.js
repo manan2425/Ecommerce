@@ -92,6 +92,7 @@ app.use(express.json());
 export default app;
 
 // MongoDB Connection
+let lastDbError = null;
 async function DataBaseConnection() {
     if (mongoose.connection.readyState === 1) {
         console.log("Using existing MongoDB connection");
@@ -114,6 +115,7 @@ async function DataBaseConnection() {
         });
         console.log(`MongoDB connected successfully: ${mongoose.connection.name}`);
     } catch (error) {
+        lastDbError = error.message;
         console.error("DB Connection Error:", error.message);
         console.error("Full error:", error);
     }
@@ -153,6 +155,7 @@ app.get("/api/test", (req, res) => {
         JWT_SECRET: process.env.JWT_SECRET ? "Set" : "Not set",
         DB_CONNECTED: mongoose.connection.readyState === 1,
         DB_READY_STATE: mongoose.connection.readyState,
+        LAST_DB_ERROR: lastDbError,
         PORT: process.env.PORT
     });
 });
