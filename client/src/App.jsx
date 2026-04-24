@@ -38,12 +38,15 @@ import { useNavigate } from "react-router-dom"
 import { Toaster } from "./components/ui/toaster"
 import { initSocket } from "./lib/socket"
 
+import { useState } from "react"
+
 function App() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isAuthenticated, user, isLoading } = useSelector(state => state.auth);
+  const { isAuthenticated, user, isLoading: authLoading } = useSelector(state => state.auth);
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
     // Initialize socket connection for real-time updates
@@ -55,10 +58,23 @@ function App() {
     dispatch(checkAuth());
   }, [dispatch]);
 
+  // Handle minimum display time for the loader
+  useEffect(() => {
+    if (authLoading) {
+      setShowLoader(true);
+    } else {
+      // When auth check is done, wait a bit to make the transition feel "proper"
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+      }, 1200); // 1.2 seconds minimum
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading]);
+
 
   // Authentication routing is handled by CheckAuth wrapper on the routes.
-  // Show premium loading page while checking initial auth status
-  if (isLoading) {
+  // Show premium loading page while checking initial auth status or during login
+  if (showLoader) {
     return <FullPageLoader />;
   }
 

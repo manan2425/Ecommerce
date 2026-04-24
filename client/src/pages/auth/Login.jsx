@@ -33,12 +33,14 @@ export default function AuthLogin() {
           toast({
             title: data?.payload?.message,
           })
-          // Navigate based on user role
-          if (data.payload.user.role === "admin") {
-            navigate("/admin/dashboard");
-          } else {
-            navigate("/shop/home");
-          }
+          // Navigate based on user role after a short delay for better UX
+          setTimeout(() => {
+            if (data.payload.user.role === "admin") {
+              navigate("/admin/dashboard");
+            } else {
+              navigate("/shop/home");
+            }
+          }, 800); // 0.8s delay to allow toast to be seen
         }
         else {
 
