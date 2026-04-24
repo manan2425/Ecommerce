@@ -146,6 +146,26 @@ app.get("/api/test", (req, res) => {
     });
 });
 
+app.get("/api/test-db", async (req, res) => {
+    try {
+        if (!isConnected) {
+            await DataBaseConnection();
+        }
+        res.status(200).json({
+            success: true,
+            message: "Database connected",
+            dbName: mongoose.connection.name,
+            readyState: mongoose.connection.readyState
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Database connection failed",
+            error: error.message
+        });
+    }
+});
+
 app.use("/api/auth", authRoutes);
 
 // Admin Routes
