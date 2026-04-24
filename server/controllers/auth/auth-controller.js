@@ -10,136 +10,127 @@ import UserActivity from "../../models/UserActivity.js";
 const secretKey = process.env.JWT_SECRET || "CLIENT_SECRET_KEY";
 
 // Register
-export const registerUser = async(req,res)=>{
-    try{
-        const {userName,email,password} = req.body;
+export const registerUser = async (req, res) => {
+    try {
+        const { userName, email, password } = req.body;
 
-        try{
-            if(userName.trim().length===0 || email.trim().length===0 || password.trim().length===0 ){
-                return res.status(406).json({success:false,message:"All Fields Are Mandatory"});
-            }
+        // Robust check for missing or non-string fields
+        if (!userName || typeof userName !== 'string' || 
+            !email || typeof email !== 'string' || 
+            !password || typeof password !== 'string') {
+            return res.status(406).json({ success: false, message: "All fields are mandatory and must be valid text" });
+        }
 
-            const checkUser = await User.findOne({email});
-            if(checkUser){
-                return res.status(403).json({success: false,
-                    message : "User Already Exist"
-                });
-            }
+        const trimmedUserName = userName.trim();
+        const trimmedEmail = email.trim();
+        const trimmedPassword = password.trim();
 
-            const hashPassword = await bcrypt.hash(password,12);
-            console.log("hash password: " + hashPassword);
-            const newUser = new User({
-                userName,
-                email,
-                password : hashPassword
-            });
+        if (trimmedUserName.length === 0 || trimmedEmail.length === 0 || trimmedPassword.length === 0) {
+            return res.status(406).json({ success: false, message: "Fields cannot be empty" });
+        }
 
-            try{
-                const response = await newUser.save();
-                console.log("Response User Register  : ",JSON.stringify(response));
-                res.status(200).json({
-                    success: true,
-                    message: "Registration Successfull"
-                });
-
-            }catch(error){
-                console.log(error);
-                res.status(500).json({
-                    success: false,
-                    message: "Error In Submission"
-                });
-            }
-
-        }catch(error){
-            console.log(error);
-            res.status(500).json({
+        const checkUser = await User.findOne({ email: trimmedEmail });
+        if (checkUser) {
+            return res.status(403).json({
                 success: false,
-                message: "Some Error Occured"
+                message: "User Already Exist"
             });
         }
-    }catch(error){
-        console.log(error);
+
+        const hashPassword = await bcrypt.hash(trimmedPassword, 12);
+        const newUser = new User({
+            userName: trimmedUserName,
+            email: trimmedEmail,
+            password: hashPassword
+        });
+
+        await newUser.save();
+        res.status(200).json({
+            success: true,
+            message: "Registration Successful"
+        });
+
+    } catch (error) {
+        console.error("Registration Error:", error);
         res.status(500).json({
             success: false,
-            message: "Some Error Occured"
+            message: "Some Error Occurred During Registration",
+            error: error.message
         });
     }
 }
 
 // Login
-export const login = async(req,res)=>{
-    try{
-        const {email,password} = req.body;
-        if(password.trim().length===0 || email.trim().length===0){
-            return res.status(406).json({success:false,message:"All Fields Are Mandatory"});
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Robust check for missing or non-string fields
+        if (!email || typeof email !== 'string' || !password || typeof password !== 'string') {
+            return res.status(406).json({ success: false, message: "Email and password are required" });
         }
-        try{
-            const checkUser = await User.findOne({email});
-            if(!checkUser){
-                return res.status(404).json({success:false,message:"User Not Found, Please Register"});
-            }
-            try{
-                const checkPassword = await bcrypt.compare(password,checkUser.password);
-                if(!checkPassword){
-                    return res.status(403).json({success:false,message:"Invalid Password or Email"});
-                }
-                const token = jwt.sign({
-                    id: checkUser._id,
-                    role: checkUser.role,
-                    email: checkUser.email,
-                    userName: checkUser.userName
-                }, secretKey, { expiresIn: "60m" });
 
-                const cookieOptions = {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    sameSite: "lax",
-                    maxAge: 60 * 60 * 1000 // 1 hour
-                };
+        const trimmedEmail = email.trim();
+        const trimmedPassword = password.trim();
 
-                // Log the login activity
-                try {
-                    const activity = new UserActivity({
-                        userId: checkUser._id,
-                        activityType: 'login',
-                        ipAddress: req.ip || req.connection.remoteAddress,
-                        userAgent: req.headers['user-agent']
-                    });
-                    await activity.save();
-                } catch (activityError) {
-                    console.log('Error logging login activity:', activityError);
-                    // Don't fail the login if activity logging fails
-                }
+        if (trimmedEmail.length === 0 || trimmedPassword.length === 0) {
+            return res.status(406).json({ success: false, message: "Fields cannot be empty" });
+        }
 
-                res.cookie("token", token, cookieOptions).status(200).json({
-                    success : true,
-                    message : "Login Successfully",
-                    user : {
-                        userName : checkUser.userName,
-                        email : checkUser.email,
-                        role : checkUser.role,
-                        id : checkUser._id 
-                    }
-                });
-            }catch(error){
-                console.log(error);
-                return res.status(500).json({
-                    success: false,
-                    message: "Some Error Occured"
-                });
-            }
-        }catch(error){
-            console.log(error);
-            return res.status(500).json({
-                success: false,
-                message: "Some Error Occured"
+        const checkUser = await User.findOne({ email: trimmedEmail });
+        if (!checkUser) {
+            return res.status(404).json({ success: false, message: "User Not Found, Please Register" });
+        }
+
+        const checkPassword = await bcrypt.compare(trimmedPassword, checkUser.password);
+        if (!checkPassword) {
+            return res.status(403).json({ success: false, message: "Invalid Password or Email" });
+        }
+
+        const token = jwt.sign({
+            id: checkUser._id,
+            role: checkUser.role,
+            email: checkUser.email,
+            userName: checkUser.userName
+        }, secretKey, { expiresIn: "60m" });
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 1000 // 1 hour
+        };
+
+        // Log the login activity
+        try {
+            const activity = new UserActivity({
+                userId: checkUser._id,
+                activityType: 'login',
+                ipAddress: req.ip || (req.connection && req.connection.remoteAddress) || (req.socket && req.socket.remoteAddress),
+                userAgent: req.headers['user-agent']
             });
+            await activity.save();
+        } catch (activityError) {
+            console.error('Error logging login activity:', activityError);
         }
-    }catch(error){
-        console.log(error.message);
+
+        res.cookie("token", token, cookieOptions).status(200).json({
+            success: true,
+            message: "Login Successfully",
+            user: {
+                userName: checkUser.userName,
+                email: checkUser.email,
+                role: checkUser.role,
+                id: checkUser._id
+            }
+        });
+
+    } catch (error) {
+        console.error("Login Error:", error);
         return res.status(500).json({
             success: false,
-            message: "Some Error Occured"
+            message: "Internal Server Error",
+            error: error.message
         });
     }
 }
