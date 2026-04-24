@@ -145,13 +145,7 @@ const ensureDbConnected = async (req, res, next) => {
     }
 };
 
-app.use(ensureDbConnected);
-
-// Routes
-app.get("/api/ping", (req, res) => {
-    res.status(200).json({ status: "pong", message: "Express backend is alive! 🚀" });
-});
-
+// Moved for debugging
 app.get("/api/test", (req, res) => {
     res.status(200).json({
         NODE_ENV: process.env.NODE_ENV,
@@ -161,6 +155,13 @@ app.get("/api/test", (req, res) => {
         DB_READY_STATE: mongoose.connection.readyState,
         PORT: process.env.PORT
     });
+});
+
+app.use(ensureDbConnected);
+
+// Routes
+app.get("/api/ping", (req, res) => {
+    res.status(200).json({ status: "pong", message: "Express backend is alive! 🚀" });
 });
 
 app.get("/api/test-db", async (req, res) => {
