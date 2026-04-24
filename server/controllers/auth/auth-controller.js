@@ -161,10 +161,17 @@ export const login = async (req, res) => {
 
     } catch (error) {
         console.error("CRITICAL Login Error:", error);
+        
+        // Determine if it's a database-related error
+        const isDbError = error.message.toLowerCase().includes('database') || 
+                         error.message.toLowerCase().includes('mongo') ||
+                         mongoose.connection.readyState !== 1;
+
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error",
+            message: isDbError ? "Database Connection Error - Please check MongoDB Atlas Whitelist" : "Internal Server Error",
             error: error.message,
+            dbState: mongoose.connection.readyState,
             stack: process.env.NODE_ENV !== "production" ? error.stack : undefined
         });
     }

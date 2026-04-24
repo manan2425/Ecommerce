@@ -92,22 +92,26 @@ app.use(express.json());
 export default app;
 
 // MongoDB Connection
-let isConnected = false;
 async function DataBaseConnection() {
-    if (isConnected) return;
+    if (mongoose.connection.readyState === 1) {
+        console.log("Using existing MongoDB connection");
+        return;
+    }
+    
     const mongoUrl = process.env.MONGODB_URL;
     console.log("Attempting to connect to MongoDB...");
+    
     if (!mongoUrl) {
         console.error("MONGODB_URL is not set!");
         return;
     }
+    
     console.log("MongoDB URL found, connecting...");
     try {
         await mongoose.connect(mongoUrl, {
             serverSelectionTimeoutMS: 30000,
             bufferCommands: false,
         });
-        isConnected = true;
         console.log(`MongoDB connected successfully: ${mongoose.connection.name}`);
     } catch (error) {
         console.error("DB Connection Error:", error.message);
@@ -121,12 +125,23 @@ DataBaseConnection();
 // Middleware to ensure DB is connected before processing requests
 const ensureDbConnected = async (req, res, next) => {
     try {
-        if (!isConnected) {
+        if (mongoose.connection.readyState !== 1) {
+            console.log("DB not connected, attempting to connect before processing request...");
             await DataBaseConnection();
         }
-        next();
+        
+        if (mongoose.connection.readyState === 1) {
+            next();
+        } else {
+            throw new Error("Failed to establish database connection");
+        }
     } catch (error) {
-        res.status(503).json({ success: false, message: "Database connection in progress, please try again." });
+        console.error("ensureDbConnected error:", error.message);
+        res.status(503).json({ 
+            success: false, 
+            message: "Database connection failed, please try again later.",
+            error: error.message 
+        });
     }
 };
 
@@ -142,21 +157,22 @@ app.get("/api/test", (req, res) => {
         NODE_ENV: process.env.NODE_ENV,
         MONGODB_URL: process.env.MONGODB_URL ? "Set" : "Not set",
         JWT_SECRET: process.env.JWT_SECRET ? "Set" : "Not set",
-        DB_CONNECTED: isConnected,
+        DB_CONNECTED: mongoose.connection.readyState === 1,
+        DB_READY_STATE: mongoose.connection.readyState,
         PORT: process.env.PORT
     });
 });
 
 app.get("/api/test-db", async (req, res) => {
     try {
-        if (!isConnected) {
-            await DataBaseConnection();
-        }
+        await DataBaseConnection();
+        
         res.status(200).json({
-            success: true,
-            message: "Database connected",
+            success: mongoose.connection.readyState === 1,
+            message: mongoose.connection.readyState === 1 ? "Database connected" : "Database disconnected",
             dbName: mongoose.connection.name,
-            readyState: mongoose.connection.readyState
+            readyState: mongoose.connection.readyState,
+            connected: mongoose.connection.readyState === 1
         });
     } catch (error) {
         res.status(500).json({
