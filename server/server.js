@@ -7,6 +7,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Configuration
 import { setIO } from "./helpers/socket.js";
@@ -160,3 +166,15 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
         console.log(`Server running on port ${PORT}`);
     });
 }
+
+// --- PRODUCTION STATIC SERVING (For Hostinger/VPS) ---
+const clientBuildPath = path.join(__dirname, "../client/dist");
+app.use(express.static(clientBuildPath));
+
+// Catch-all route for React Router
+app.get("*", (req, res) => {
+    // Only serve index.html if the request doesn't start with /api
+    if (!req.url.startsWith("/api")) {
+        res.sendFile(path.join(clientBuildPath, "index.html"));
+    }
+});

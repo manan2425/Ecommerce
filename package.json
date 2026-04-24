@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "start": "node server/server.js",
+    "postinstall": "cd client && npm install && npm run build"
+  },
   "engines": {
     "node": ">=18"
   },
