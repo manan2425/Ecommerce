@@ -180,70 +180,81 @@ export const getSearchSuggestions = async (req, res) => {
 };
 
 
-export const getFilteredProducts = async(req,res)=>{
-    try{
+export const getFilteredProducts = async (req, res) => {
+    try {
+        const { category = [], brand = [], sortBy = "price-lowtohigh", keyword = "" } = req.query;
+        
+        // Relaxed isActive filter to include documents where the field is missing
+        let filters = { isActive: { $ne: false } };
+        
+        // Safely handle category (could be string, comma-separated string, or array)
+        if (category && (Array.isArray(category) ? category.length > 0 : category.trim() !== "")) {
+            const categoryArray = Array.isArray(category) 
+                ? category 
+                : category.split(",").filter(c => c.trim() !== "");
+            
+            if (categoryArray.length > 0) {
+                filters.category = { $in: categoryArray };
+            }
+        }
 
-        const {category = [],brand = [],sortBy = "price-lowtohigh", keyword = ""} = req.query;
-        let filters = { isActive: true };
-        if(category.length > 0){
-            filters.category = {$in : category.split(",")};
-        } 
-        if(brand.length > 0){
-            filters.brand = {$in : brand.split(",")};
-        } 
+        // Safely handle brand (could be string, comma-separated string, or array)
+        if (brand && (Array.isArray(brand) ? brand.length > 0 : brand.trim() !== "")) {
+            const brandArray = Array.isArray(brand) 
+                ? brand 
+                : brand.split(",").filter(b => b.trim() !== "");
+            
+            if (brandArray.length > 0) {
+                filters.brand = { $in: brandArray };
+            }
+        }
 
-        if(keyword){
-            const regEx = new RegExp(keyword, "i");
+        if (keyword) {
+            // Safely handle keyword if it's an array (unlikely but possible)
+            const searchKeyword = Array.isArray(keyword) ? keyword[0] : keyword;
+            const regEx = new RegExp(searchKeyword, "i");
             filters.$or = [
-                {title : regEx},
-                {description : regEx},
-                {category : regEx},
-                {brand : regEx}
-            ]
+                { title: regEx },
+                { description: regEx },
+                { category: regEx },
+                { brand: regEx }
+            ];
         }
 
         let sort = {};
-
-        switch(sortBy){
+        switch (sortBy) {
             case "price-lowtohigh":
                 sort.price = 1;
-            break;
-
+                break;
             case "price-hightolow":
                 sort.price = -1;
-            break;
-            
+                break;
             case "title-atoz":
                 sort.title = 1;
-            break;
-            
+                break;
             case "title-ztoa":
                 sort.title = -1;
-            break;
-
+                break;
             default:
                 sort.price = 1;
-                 
-               
-              
         }
 
-
         const products = await Product.find(filters).sort(sort).limit(50);
+        
         return res.status(200).json({
-            success : true,
-            message : "Products Data Found Successfully",
-            data : products
-        })
-    }catch(error){
-        console.log(error);
+            success: true,
+            message: "Products Data Found Successfully",
+            data: products
+        });
+    } catch (error) {
+        console.error("Error in getFilteredProducts:", error);
         return res.status(500).json({
-            success : false,
-            message : "Some Error Occured"
-
-        })
+            success: false,
+            message: "Internal Server Error",
+            error: error.message // Include error message for easier debugging
+        });
     }
-}
+};
 
 export const getProductDetails = async(req,res)=>{
     try{
