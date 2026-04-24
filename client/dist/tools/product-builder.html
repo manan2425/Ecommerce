@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Product JSON Builder (JS-only)</title>
+  <!-- model-viewer removed — image-only product builder -->
+  <style>
+    body{font-family:Inter,Segoe UI,Arial;margin:20px;background:#f7fafc;color:#0f172a}
+    input,textarea,select{width:100%;padding:8px;margin:6px 0;border:1px solid #d1d5db;border-radius:6px}
+    .row{display:flex;gap:12px}
+    .col{flex:1}
+    button{padding:10px 14px;border-radius:8px;border:none;background:#0ea5e9;color:#fff;cursor:pointer}
+    .muted{color:#6b7280;font-size:0.9rem}
+    .card{background:#fff;border-radius:8px;padding:16px;border:1px solid #e6edf3;margin-bottom:12px}
+    pre{background:#0b1220;color:#e6f0ff;overflow:auto;padding:12px;border-radius:6px}
+    .parts-list{margin-top:8px;border-top:1px dashed #e6edf3;padding-top:8px}
+    .mini{font-size:0.9rem;color:#111827}
+    .danger{background:#ef4444}
+    .hotspot-marker{position:absolute;width:24px;height:24px;border-radius:50%;background:#ef4444;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transform:translate(-50%,-50%);border:2px solid #fff;z-index:5}
+    .hotspot-editor{position:fixed;right:20px;top:80px;width:360px;background:#fff;border:1px solid #e6edf3;padding:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.12);z-index:9999}
+    .image-canvas{position:relative;display:block}
+  </style>
+</head>
+<body>
+  <h1>Product JSON Builder — JS-only helper</h1>
+  <p class="muted">Build product JSON for your admin API or for quick testing. Upload an image and click (admin UI) to add hotspots (parts) — each part has name, price, thumbnail and description. Copy JSON or POST it.</p>
+
+  <div class="card">
+    <h3>Basic product info</h3>
+    <div class="row">
+      <div class="col">
+        <label>Title</label>
+        <input id="title" placeholder="Product title" />
+      </div>
+      <div class="col">
+        <label>Price</label>
+        <input id="price" placeholder="129.99" type="number" step="0.01" />
+      </div>
+    </div>
+      <div class="row" style="margin-top:8px">
+        <div class="col">
+          <label>Total Stock</label>
+          <input id="totalStock" placeholder="1" type="number" step="1" min="0" />
+        </div>
+      </div>
+    <label>Sale Price (optional)</label>
+    <input id="salePrice" placeholder="99.99" type="number" step="0.01" />
+    <label>Description</label>
+    <textarea id="description" rows="3" placeholder="Short description"></textarea>
+
+    <div class="row">
+        <div class="col">
+        <label>2D Image URL (thumbnail / poster)</label>
+        <input id="imageUrl" placeholder="https://.../image.jpg" />
+      </div>
+      <div class="col">
+        <label>Or Upload Image (client-side preview only)</label>
+        <input id="imageFile" type="file" accept="image/*" />
+      </div>
+    </div>
+
+    <!-- 3D model removed — image-only hotspot workflow -->
+
+    <div style="margin-top:8px">
+      <button id="refreshPreview">Preview</button>
+      <button id="quickSave" style="background:#10b981;margin-left:10px">Quick save & Close</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Define parts (optional)</h3>
+    <p class="muted">Parts are objects with: name, nodeName, price, thumbnail, description. Add as many as you need.</p>
+    <div id="partsForm" class="card">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input placeholder="Part name (e.g., ""Sole"")" id="partName" />
+        <input placeholder="hotspot id (optional)" id="partNodeName" />
+        <input placeholder="price" id="partPrice" type="number" step="0.01" style="width:110px" />
+        <input placeholder="thumbnail URL (optional)" id="partThumb" />
+        <button id="addPartBtn">Add part</button>
+      </div>
+      <div class="parts-list" id="partsList"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Preview</h3>
+    <div id="preview" style="display:flex;gap:12px;">
+      <div style="flex:1;min-height:200px;">
+        <!-- Use an element id that matches the JS (imageCanvas) so scripts don't fail when trying to access it -->
+        <div id="imageCanvas" style="border-radius:6px;background:#0b1220;padding:12px;min-height:200px"></div>
+      </div>
+      <div style="width:320px;padding:6px">
+        <strong>Preview details</strong>
+        <div id="previewInfo" class="muted"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Result actions</h3>
+    <div class="row" style="margin-bottom:8px;">
+      <button id="copyJson">Copy JSON to clipboard</button>
+      <button id="downloadJson">Download JSON file</button>
+      <button id="postApi">POST to API (optional)</button>
+      <input id="postUrl" placeholder="https://localhost:5001/api/admin/products/add" style="flex:1;margin-left:8px" />
+    </div>
+    <label>Generated Product JSON</label>
+    <pre id="jsonOut">{ }</pre>
+  </div>
+
+  <script>
+    // Minimal JS-only builder
+    const parts = [];
+    const imageFileInput = document.getElementById('imageFile');
+    let imageFileDataUrl = null;
+
+    imageFileInput.addEventListener('change',(e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        imageFileDataUrl = reader.result;
+        document.getElementById('imageUrl').value = imageFileDataUrl; // set preview
+        renderPreview();
+      }
+      reader.readAsDataURL(f);
+    })
+
+    document.getElementById('addPartBtn').addEventListener('click',()=>{
+      const name = document.getElementById('partName').value.trim();
+      const nodeName = document.getElementById('partNodeName').value.trim();
+      const price = parseFloat(document.getElementById('partPrice').value || 0);
+      const thumbnail = document.getElementById('partThumb').value.trim();
+      if(!name){ alert('Part name required'); return; }
+      parts.push({name,nodeName,price,thumbnail,description:''});
+      document.getElementById('partName').value='';
+      document.getElementById('partNodeName').value='';
+      document.getElementById('partPrice').value='';
+      document.getElementById('partThumb').value='';
+      renderParts();
+      renderOutput();
+    })
+
+    function renderParts(){
+      const el = document.getElementById('partsList');
+      el.innerHTML = '';
+      if(parts.length===0){ el.innerHTML = '<div class="muted">No parts added</div>'; return; }
+      parts.forEach((p,idx)=>{
+        const div = document.createElement('div');
+        div.style.padding='8px';
+        div.style.borderBottom='1px solid #f1f5f9';
+        div.innerHTML = `<div style=\"display:flex;justify-content:space-between;align-items:center\">\n        <div style=\"flex:1\">\n          <div style=\"font-weight:700\">${escapeHtml(p.name)} ${p.nodeName?`· <span style=\"color:#6b7280\">(${escapeHtml(p.nodeName)})</span>`:''}</div>\n          <div style=\"color:#6b7280\">${p.description || ''}</div>\n        </div>\n        <div style=\"text-align:right;margin-left:12px\">$${Number(p.price||0).toFixed(2)}<br><button data-idx=\"${idx}\" class=\"removePart\" style=\"margin-top:6px;background:#ef4444;color:#fff;border-radius:6px;padding:4px 8px;border:none\">Remove</button></div>\n      </div>`;
+        el.appendChild(div);
+      })
+      el.querySelectorAll('.removePart').forEach(btn=>btn.addEventListener('click', (ev)=>{ const idx=ev.currentTarget.dataset.idx; parts.splice(idx,1); renderParts(); renderOutput(); }));
+    }
+
+    function escapeHtml(s){ return s?.replace ? s.replace(/[&<>\"]/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])) : s }
+
+    // expose imageUrl via query param when opening this page
+    const params = new URLSearchParams(window.location.search);
+    const initialImage = params.get('imageUrl');
+    const quickSaveMode = params.get('quickSave') === '1';
+
+    if(initialImage){
+      document.getElementById('imageUrl').value = decodeURIComponent(initialImage);
+    }
+
+    // Helper: check localStorage fallback for image (called on load and on messages)
+    function checkLocalStorageForImage(){
+      try{
+        const stored = localStorage.getItem('productBuilder_image');
+        if(stored){
+          const current = document.getElementById('imageUrl').value.trim();
+          if(!current){
+            document.getElementById('imageUrl').value = stored;
+            renderPreview();
+            renderOutput();
+            // clear it so future builders don't accidentally reuse it
+            localStorage.removeItem('productBuilder_image');
+          }
+        }
+      }catch(e){
+        console.log('localStorage fallback error', e);
+      }
+    }
+
+    // Listen to postMessage from opener (admin uploader) — helps when image URL is too large for a query string
+    window.addEventListener('message', (ev)=>{
+      try{
+        // Accept only messages from same origin (dev setups may use same host)
+        // In dev it may be same origin; to be tolerant we still support other origins if developer wants.
+        const data = ev.data || {};
+        if(data && data.type === 'product-builder:loadImage' && data.imageUrl){
+          // set image and render
+          document.getElementById('imageUrl').value = data.imageUrl;
+          renderPreview();
+          renderOutput();
+        }
+      }catch(e){
+        console.log('product-builder:message error', e);
+      }
+      // also run the localStorage fallback when we receive any message (helps when postMessage arrives but image wasn't included)
+      checkLocalStorageForImage();
+    });
+
+    // Attempt localStorage fallback on load (helps when postMessage never arrives due to popup blockers/new-tab timing)
+    try{ checkLocalStorageForImage(); }catch(e){ console.log('initial localStorage check failed', e); }
+
+    // hotspot editing state
+    let editingHotspot = null; // {xPercent,yPercent,index|null,name,nodeName,price,thumbnail,description}
+
+    document.getElementById('refreshPreview').addEventListener('click', ()=>{ renderPreview(); renderOutput(); })
+
+    // Quick save: apply safe defaults and submit to API automatically (saves then redirects back to admin)
+    document.getElementById('quickSave').addEventListener('click', async()=>{
+      // fill safe defaults for required fields
+      if(!document.getElementById('title').value) document.getElementById('title').value = 'Image Product ' + Date.now();
+      if(!document.getElementById('price').value) document.getElementById('price').value = '1.00';
+      if(!document.getElementById('salePrice').value) document.getElementById('salePrice').value = '0.00';
+      if(!document.getElementById('totalStock').value) document.getElementById('totalStock').value = '1';
+      // attempt to post automatically
+      const target = document.getElementById('postUrl').value.trim() || '/api/admin/products/add';
+      const payload = buildProductJson();
+      try{
+        const resp = await fetch(target, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), credentials: 'include'});
+        const data = await resp.json();
+        if(data?.success){
+          // redirect back to admin products page in the same site
+          window.location.href = '/admin/products';
+        } else {
+          alert('Save failed: ' + JSON.stringify(data));
+        }
+      }catch(e){ alert('Quick save failed: ' + e.message); }
+    });
+
+    function renderPreview(){
+      const imgUrl = document.getElementById('imageUrl').value.trim();
+      const canvas = document.getElementById('imageCanvas');
+      canvas.innerHTML = '';
+
+      if(imgUrl){
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.width = '100%';
+        wrapper.style.display = 'flex';
+        wrapper.style.justifyContent = 'center';
+
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.style.maxWidth='100%';
+        img.style.maxHeight='400px';
+        img.style.objectFit='contain';
+        img.id = 'builderImage';
+
+        // click-to-add hotspot on the image
+        img.addEventListener('click', (e) => {
+          const rect = img.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const xPercent = Math.round((x / rect.width) * 10000) / 100; // two decimals
+          const yPercent = Math.round((y / rect.height) * 10000) / 100;
+          editingHotspot = { xPercent, yPercent, index: null, name: '', nodeName: '', price: 0, thumbnail: '', description: '' };
+          renderEditor();
+          renderMarkers();
+        });
+
+        wrapper.appendChild(img);
+        canvas.appendChild(wrapper);
+
+        // add existing markers
+        renderMarkers();
+      }
+      else{
+        canvas.innerHTML = '<div class="muted">No image available. Provide an image URL or upload a file.</div>'
+      }
+
+      const info = document.getElementById('previewInfo');
+      info.innerHTML = `<div><strong>${escapeHtml(document.getElementById('title').value || '—')}</strong></div>\n      <div class=\"muted\">Price: $${document.getElementById('price').value || '0.00'} • Sale: $${document.getElementById('salePrice').value || '0.00'}</div>\n      <div class=\"muted\">Parts: ${parts.length}</div>`;
+    }
+
+    function renderMarkers(){
+      const canvas = document.getElementById('imageCanvas');
+      if(!canvas) return;
+      // remove previous markers
+      canvas.querySelectorAll('.hotspot-marker').forEach(n=>n.remove());
+      const img = document.getElementById('builderImage');
+      if(!img) return;
+
+      parts.forEach((p, idx)=>{
+        if(p.xPercent===undefined || p.yPercent===undefined) return;
+        const marker = document.createElement('div');
+        marker.className = 'hotspot-marker';
+        marker.style.left = p.xPercent + '%';
+        marker.style.top = p.yPercent + '%';
+        marker.innerText = idx + 1;
+        marker.title = p.name || ('Part ' + (idx+1));
+        marker.addEventListener('click', (ev)=>{ ev.stopPropagation(); editingHotspot = { ...p, index: idx }; renderEditor(); renderMarkers(); });
+        canvas.appendChild(marker);
+      });
+    }
+
+    function renderEditor(){
+      const existing = document.getElementById('hotspotEditor');
+      if(existing) existing.remove();
+      if(!editingHotspot) return;
+
+      const editor = document.createElement('div');
+      editor.id = 'hotspotEditor';
+      editor.className = 'hotspot-editor';
+      editor.innerHTML = `<div style="font-weight:700;margin-bottom:8px">Hotspot</div>
+        <div style='font-size:12px;color:#6b7280;margin-bottom:8px'>x: ${editingHotspot.xPercent}%, y: ${editingHotspot.yPercent}%</div>
+        <label>Name</label><input id='he_name' value='${escapeHtml(editingHotspot.name||'')}' />
+        <label class='mt-1'>Hotspot id (optional)</label><input id='he_node' value='${escapeHtml(editingHotspot.nodeName||'')}' />
+        <label class='mt-1'>Price</label><input id='he_price' value='${editingHotspot.price||0}' type='number' step='0.01' />
+        <label class='mt-1'>Thumbnail URL</label><input id='he_thumb' value='${escapeHtml(editingHotspot.thumbnail||'')}' />
+        <label class='mt-1'>Description</label><textarea id='he_desc'>${escapeHtml(editingHotspot.description||'')}</textarea>
+        <div style='display:flex;gap:8px;margin-top:8px'><button id='he_save'>Save</button><button id='he_cancel' style='background:#ef4444'>Cancel</button></div>`;
+
+      document.body.appendChild(editor);
+      document.getElementById('he_save').addEventListener('click', ()=>{
+        const name = document.getElementById('he_name').value.trim();
+        const nodeName = document.getElementById('he_node').value.trim();
+        const price = Number(document.getElementById('he_price').value || 0);
+        const thumbnail = document.getElementById('he_thumb').value.trim();
+        const description = document.getElementById('he_desc').value.trim();
+        const entry = { name, nodeName, price, thumbnail, description, xPercent: Number(editingHotspot.xPercent), yPercent: Number(editingHotspot.yPercent) };
+        if(editingHotspot.index !== null && editingHotspot.index !== undefined){
+          parts[editingHotspot.index] = entry;
+        } else {
+          parts.push(entry);
+        }
+        editingHotspot = null; renderEditor(); renderMarkers(); renderOutput();
+      });
+
+      document.getElementById('he_cancel').addEventListener('click', ()=>{ editingHotspot = null; renderEditor(); renderMarkers(); });
+    }
+
+    function buildProductJson(){
+      const product = {
+        title: document.getElementById('title').value.trim(),
+        price: Number(document.getElementById('price').value || 0),
+        salePrice: Number(document.getElementById('salePrice').value || 0),
+        totalStock: Number(document.getElementById('totalStock').value || 1),
+        description: document.getElementById('description').value.trim(),
+        image: document.getElementById('imageUrl').value.trim() || (imageFileDataUrl || null),
+        // model3dUrl removed
+        parts: parts.map(p=>({name:p.name,nodeName:p.nodeName,price:p.price,thumbnail:p.thumbnail,description:p.description,xPercent:p.xPercent,yPercent:p.yPercent}))
+      }
+      return product;
+    }
+
+    function renderOutput(){
+      const product = buildProductJson();
+      document.getElementById('jsonOut').innerText = JSON.stringify(product, null, 2);
+    }
+
+    document.getElementById('copyJson').addEventListener('click', async()=>{
+      const json = document.getElementById('jsonOut').innerText;
+      try{ await navigator.clipboard.writeText(json); alert('Copied product JSON to clipboard'); }
+      catch(e){ alert('Copy failed — select and copy manually'); }
+    })
+
+    document.getElementById('downloadJson').addEventListener('click',()=>{
+      const json = document.getElementById('jsonOut').innerText;
+      const blob = new Blob([json], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'product.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    })
+
+    document.getElementById('postApi').addEventListener('click', async()=>{
+      const target = document.getElementById('postUrl').value.trim();
+      if(!target){ alert('Enter POST URL to admin endpoint (e.g., https://localhost:5001/api/admin/products/add)'); return; }
+      const payload = buildProductJson();
+
+      // POST JSON — note: existing backend may expect multipart/form-data for images; this tries JSON first
+      try{
+        const resp = await fetch(target, {
+            method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), credentials: 'include'
+        });
+        const data = await resp.json();
+          alert('POST response:\n' + JSON.stringify(data,null,2));
+          if(data?.success){
+            // user saved directly — redirect to admin products page if running from admin
+            if(params.get('fromAdmin') === '1'){
+              window.location.href = '/admin/products';
+            }
+          }
+      }catch(e){ alert('POST failed: ' + e.message); }
+    })
+
+    // initial render
+    renderParts(); renderPreview(); renderOutput();
+  </script>
+</body>
+</html>

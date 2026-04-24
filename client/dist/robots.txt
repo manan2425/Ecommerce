@@ -1,0 +1,27 @@
+# Robots.txt for SHREE MARUTI TRADERS
+# Controls search engine crawling
+
+# Allow all bots to crawl
+User-agent: *
+Allow: /
+
+# Disallow admin and sensitive areas
+Disallow: /admin/
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /admin-panel/
+Disallow: /user-activities/
+
+# Allow specific crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Crawl delay (optional - adjust as needed)
+Crawl-delay: 0
+
+# Sitemap location
+Sitemap: https://shreemarutitraders.com/sitemap.xml
