@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node ./node_modules/vite/bin/vite.js build",
-    "postinstall": "chmod +x node_modules/.bin/vite",
+    "postinstall": "",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -32,7 +32,7 @@
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "jspdf": "^3.0.5",
+    "jspdf": "^2.5.1",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.456.0",
     "react": "^18.3.1",
