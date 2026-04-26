@@ -29,6 +29,7 @@ export default function ShopList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { productList, productDetails } = useSelector(state => state.shopProducts);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState(() => {
     // Priority 1: URL search params
     const categoryParam = searchParams.get('category');
