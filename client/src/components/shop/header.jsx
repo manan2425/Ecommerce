@@ -1,6 +1,6 @@
 
 import { House, LogOut, Menu, ShoppingCart, User, Search, X, ChevronDown } from "lucide-react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
