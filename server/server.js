@@ -145,7 +145,8 @@ const ensureDbConnected = async (req, res, next) => {
     }
 };
 
-app.use(ensureDbConnected);
+// Apply ensureDbConnected ONLY to API routes
+app.use("/api", ensureDbConnected);
 
 // Routes
 app.get("/api/ping", (req, res) => {
