@@ -13,7 +13,15 @@ import {
     Wifi,
     GraduationCap,
     Factory,
-    Clock
+    Clock,
+    BookOpen,
+    ShieldCheck,
+    Lightbulb,
+    Trophy,
+    Boxes,
+    HardHat,
+    Microscope,
+    Bot
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -25,27 +33,26 @@ const AboutUs = () => {
         { value: "10+", label: "Years Training" }
     ];
 
-    const values = [
-        {
-            icon: Target,
-            title: "Exceed Expectations",
-            description: "Exceed the expectations of clients and customers with quality service."
-        },
-        {
-            icon: Zap,
-            title: "Add Value",
-            description: "Deliver projects and services that add value and are sustainable."
-        },
-        {
-            icon: Users,
-            title: "Social Investment",
-            description: "Reinvest profits for social outcomes like providing training to students."
-        },
-        {
-            icon: Award,
-            title: "Quality & Safety",
-            description: "Ensure the highest standards of quality and safety across all operational work streams."
-        }
+    const missionPoints = [
+        "Students Are The Most Valuable ‘Asset’ Of Our Nation.",
+        "Mechatron Solutions Is Committed To- Be a leader in Education & training system.",
+        "Promote importance of real field work place with free from accident and injuries.",
+        "Inculcate good knowledge with values & discipline through interactive teaching.",
+        "Offer avenues for professional skill enhancement to create environment of harmony and joy when they will in industries.",
+        "Provide most advance education and training to all engineers including new entrants- to enrich their knowledge, competence & skills to ensure that they embrace technological changes, stay updated with latest technologies and techniques for self development."
+    ];
+
+    const objectives = [
+        "Upgrade working knowledge and practical skill.",
+        "Develop working competency & multi skilling capability.",
+        "Inculcate work discipline and good moral values.",
+        "Increases engineer’s confidence.",
+        "Create ownership and responsibility by enhancing technician knowledge.",
+        "Generate skills which are not technical but those are immense fully use for presenting the technical knowledge in front of industrial leaders or field experts in professional way like presentation skill.",
+        "Upgrade step by step levels of skill (Operational & Maintenance) of Personnel’s.",
+        "Develop capabilities to Operate & Maintain Equipment.",
+        "To understand relations between Equipment & Quality.",
+        "To create a team of Professionals to meet challenges in the Technological, Economical and Modernization of Management Development."
     ];
 
     const services = [
@@ -59,9 +66,18 @@ const AboutUs = () => {
         { icon: Monitor, title: "Automation Projects", desc: "Complete system development" }
     ];
 
-    const softwares = [
-        "Codesys", "TIA Portal", "GXworks", "GT Designer", 
-        "AutoCAD Electrical", "AutoCAD Mechanical", "Automation Builder"
+    const detailedServices = [
+        "Electronics & Electrical components like PLC, HMI, Resistor, Capacitor, Relays, contractors, Transistors, Ic supply with technical support & application development.",
+        "Expertise in developing temperature control process, introduce automation in manually operated system.",
+        "All kind of sensor interfacing with controller or PLCs.",
+        "Industrial Automation project.",
+        "Technical training on various field like Electrical, Electronics, Mechatronics, Mechanical etc."
+    ];
+
+    const robots = [
+        "Rococo", "Rob war", "Line Follower Robot", "Automatic Storage Systems", 
+        "Weight Lifting Crain", "Pneumatic Systems", "Hydraulics Systems", 
+        "Programmable Logic Control", "Factory Automation", "Micro-controller Training With Practical"
     ];
 
     return (
@@ -99,65 +115,184 @@ const AboutUs = () => {
                 </div>
             </section>
 
-            {/* Our Story */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-2 gap-12 items-start">
-                        <div>
-                            <h2 className="text-3xl font-bold mb-6">Our Story</h2>
-                            <div className="space-y-4 text-muted-foreground">
-                                <p>
-                                    We are situated at <strong>Vithal Udyognagar, Anand District, Gujarat</strong> which 
-                                    is 80 km away from Ahmedabad Airport with better industrial infrastructure. We have 
-                                    manufacturing plant of Gearing Components as well as complete Gear Boxes of 
-                                    <strong> Helical, Bevel-Helical, Planetary Types</strong> as per customer requirements.
+            {/* About Mechatron Solutions */}
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-6">
+                    <div className="grid md:grid-cols-2 gap-16 items-start">
+                        <div className="space-y-8">
+                            <div>
+                                <h2 className="text-4xl font-black text-slate-900 mb-6">Who We Are</h2>
+                                <p className="text-lg text-slate-600 leading-relaxed">
+                                    Mechatron Solutions is a service provider company in the area of custom Automation project, Instrumentation Project, since 2013. We are situated at <strong>Vithal Udyognagar, Anand District, Gujarat</strong>, 80 km from Ahmedabad Airport, with superior industrial infrastructure.
                                 </p>
-                                <p>
-                                    From <strong>2015</strong>, we started maintenance activity, supply electrical & electronics 
-                                    goods to industry on right time with proper installation guides, also providing 
-                                    Educational and Industrial training to Engineers as well as automation & maintenance 
-                                    services to industries.
-                                </p>
-                                <p>
-                                    Mechatron Solutions has a strong sense of identity and has defined its goals and 
-                                    aspirations in simple and clear terms. Our vision, mission and values inform the 
-                                    way we work on a day-to-day basis and continue to shape our corporate identity and ethos.
-                                </p>
+                            </div>
+                            <div className="space-y-6">
+                                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-3">
+                                        <Zap className="text-primary h-6 w-6" />
+                                        First in India
+                                    </h3>
+                                    <p className="text-slate-600 leading-relaxed">
+                                        We provide Online guidance in your project with technical training as well as hardware support (where to buy & how to use). And it is <strong>Free of Cost</strong>, which is first time in India.
+                                    </p>
+                                </div>
+                                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-3">
+                                        <Monitor className="text-primary h-6 w-6" />
+                                        Digital Resources
+                                    </h3>
+                                    <p className="text-slate-600 leading-relaxed">
+                                        Mechatron Solutions has an Online Technical Block covering various technical topics (SOP, OPL) on this site.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div className="space-y-6">
-                            <div className="bg-muted rounded-2xl p-6">
-                                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-primary" />
-                                    Our Team
-                                </h3>
-                                <p className="text-muted-foreground text-sm">
-                                    Our team has been working in this field for more than <strong>1 decade</strong>. 
-                                    With our vast experience and continuous efforts of our trained and competent personnel, 
-                                    we are in position to climb the step of success in Industrial automation, Maintenance 
-                                    & Development field. Our higher level staff is highly educated with long experience 
-                                    in designing standard as well as special-purpose automation systems & projects.
-                                </p>
-                            </div>
-                            <div className="bg-muted rounded-2xl p-6">
-                                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                                    <Factory className="h-5 w-5 text-primary" />
-                                    Our Facility
-                                </h3>
-                                <p className="text-muted-foreground text-sm">
-                                    We have complete setup to develop automation systems, Machine retrofitting at our own 
-                                    Plant for testing & trialing developed electromechanical systems. We also have proper 
-                                    incubation center facility for our R&D projects with various types of machines and 
-                                    well-skilled manpower.
-                                </p>
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-primary/5 rounded-[3rem] -rotate-3"></div>
+                            <div className="relative bg-white p-8 rounded-[3rem] border border-slate-100 shadow-premium">
+                                <h3 className="text-2xl font-black text-slate-900 mb-8">Our Core Offerings</h3>
+                                <div className="space-y-6">
+                                    {detailedServices.map((service, index) => (
+                                        <div key={index} className="flex gap-4">
+                                            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                                <CheckCircle className="text-primary h-4 w-4" />
+                                            </div>
+                                            <p className="text-slate-600 text-sm font-medium leading-relaxed">{service}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Services Grid */}
-            <section className="section-spacing relative bg-slate-50/50">
+            {/* Mission Section */}
+            <section className="py-20 bg-slate-900 text-white overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-full opacity-10">
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary rounded-full blur-[150px] -mr-48 -mt-24"></div>
+                </div>
+                <div className="container mx-auto px-6 relative z-10">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">Our Mission</h2>
+                            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+                                Committed to being a leader in the education and training system while promoting safety and professional excellence.
+                            </p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {missionPoints.map((point, index) => (
+                                <div key={index} className="p-6 bg-white/5 border border-white/10 rounded-3xl hover:bg-white/10 transition-colors group">
+                                    <div className="flex gap-4">
+                                        <div className="flex-shrink-0 w-10 h-10 bg-primary/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <Target className="text-primary h-5 w-5" />
+                                        </div>
+                                        <p className="text-slate-300 text-sm leading-relaxed font-medium">{point}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Objectives Section */}
+            <section className="py-24 bg-mesh">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-20">
+                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">Our Objectives</h2>
+                        <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+                            The objectives of Mechatron Solutions is to impart quality training to Engineers and trainees with a focus on practical excellence.
+                        </p>
+                    </div>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {objectives.map((obj, index) => (
+                            <Card key={index} className="border-0 shadow-premium bg-white/80 backdrop-blur-sm rounded-[2rem] hover-lift">
+                                <CardContent className="p-8">
+                                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+                                        <ShieldCheck className="text-primary h-6 w-6" />
+                                    </div>
+                                    <p className="text-slate-700 font-bold leading-relaxed">{obj}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Basic Principle & Aim */}
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-6">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+                                The Core Philosophy
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tight">Basic Principle</h2>
+                            <p className="text-xl text-slate-600 leading-relaxed mb-8">
+                                Education and training are organized for the improvement of individual capabilities to contribute to the company's business and help individuals achieve their job goals.
+                            </p>
+                            <div className="grid grid-cols-2 gap-4">
+                                {[
+                                    { label: "Trainee Technicians", sub: "(I.T.I.)" },
+                                    { label: "Engineers", sub: "(Diploma)" },
+                                    { label: "Engineers", sub: "(Degree)" },
+                                    { label: "On The Job Training", sub: "Industry Demand" }
+                                ].map((item, index) => (
+                                    <div key={index} className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                                        <div className="text-primary font-black text-lg mb-1">{item.label}</div>
+                                        <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">{item.sub}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="bg-slate-900 rounded-[3rem] p-12 text-white relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                            <div className="relative z-10">
+                                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-8">
+                                    <Lightbulb className="text-white h-8 w-8" />
+                                </div>
+                                <h3 className="text-3xl font-black mb-6">Aim of Education & Training</h3>
+                                <p className="text-slate-300 text-lg leading-relaxed mb-8">
+                                    "Classroom training and practical training in the field to make them skillful with equipment operation and maintenance, meeting the long-term perspective of life goals."
+                                </p>
+                                <div className="flex items-center gap-4 p-6 bg-white/5 rounded-3xl border border-white/10">
+                                    <HardHat className="text-primary h-8 w-8" />
+                                    <div className="text-sm font-medium text-slate-200">
+                                        Focusing on real-world industrial applications and safety protocols.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Industrial & Collage Robotics */}
+            <section className="py-24 bg-slate-50">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-20">
+                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">Industrial & College Level Robotics</h2>
+                        <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+                            We provide industrial training to students and technical persons at our training center and conduct workshops in colleges.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {robots.map((robot, index) => (
+                            <div 
+                                key={index} 
+                                className="px-8 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm flex items-center gap-3 hover:border-primary transition-colors group"
+                            >
+                                <Bot className="h-5 w-5 text-slate-400 group-hover:text-primary transition-colors" />
+                                <span className="font-bold text-slate-700 text-sm">{robot}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Core Expertise Grid */}
+            <section className="py-24 bg-white">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-20 space-y-4">
                         <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Our Core Expertise</h2>
@@ -169,9 +304,9 @@ const AboutUs = () => {
                         {services.map((service, index) => {
                             const Icon = service.icon;
                             return (
-                                <Card key={index} className="hover-lift border-0 bg-white shadow-premium overflow-hidden group rounded-[2rem]">
+                                <Card key={index} className="hover-lift border-0 bg-slate-50 shadow-sm overflow-hidden group rounded-[2.5rem]">
                                     <CardContent className="p-8 flex flex-col items-center text-center">
-                                        <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:rotate-3 shadow-inner">
+                                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:bg-primary group-hover:text-white group-hover:scale-110 group-hover:rotate-3 shadow-sm">
                                             <Icon className="h-8 w-8 transition-transform duration-500" />
                                         </div>
                                         <h3 className="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">{service.title}</h3>
@@ -184,137 +319,34 @@ const AboutUs = () => {
                 </div>
             </section>
 
-            {/* Detailed Services */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto">
-                        <h2 className="text-3xl font-bold text-center mb-12">What We Offer</h2>
-                        <div className="space-y-6">
-                            <div className="p-6 bg-muted/50 rounded-lg">
-                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                    <Wifi className="h-5 w-5 text-primary" />
-                                    Automation & IoT Solutions
-                                </h3>
-                                <p className="text-muted-foreground">
-                                    Industrial systems that can continuously monitor machine health. Automation systems 
-                                    to automate the processes in industries for improved efficiency and productivity.
-                                </p>
-                            </div>
-                            <div className="p-6 bg-muted/50 rounded-lg">
-                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                    <Cpu className="h-5 w-5 text-primary" />
-                                    CNC Repairing & Service
-                                </h3>
-                                <p className="text-muted-foreground">
-                                    Dedicated experienced team available for onsite troubleshooting, startup and equipment 
-                                    relocation. Machine tool maintenance for CNC & conventional machines.
-                                </p>
-                            </div>
-                            <div className="p-6 bg-muted/50 rounded-lg">
-                                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-                                    <Settings className="h-5 w-5 text-primary" />
-                                    CNC Engineering
-                                </h3>
-                                <p className="text-muted-foreground">
-                                    Re-configure, interconnect, backup or re-program your CNC. Repairing of electrical 
-                                    as well as electronics components (Drives, VFD, PLC, Peripherals for Industrial Automation).
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Software & Tools */}
-            <section className="py-16 bg-muted/50">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold mb-4">Tools & Technologies</h2>
-                        <p className="text-muted-foreground">
-                            We use industry-leading automation & designing software for developing productive systems
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-3">
-                        {softwares.map((software, index) => (
-                            <span 
-                                key={index} 
-                                className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium"
-                            >
-                                {software}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Mission */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-3xl mx-auto">
-                        <h2 className="text-3xl font-bold text-center mb-12">Our Mission</h2>
-                        <div className="space-y-4">
-                            {[
-                                "Exceed the expectations of clients and customers",
-                                "Deliver projects and services that add value and are sustainable",
-                                "Reinvest profits for social outcomes like providing training to students",
-                                "Take a positive commercial approach to ensure long term sustainability for the company and customers",
-                                "Ensure the highest standards of quality and safety are achieved across all operational work streams",
-                                "Communicate openly, listen to, respect and value customers"
-                            ].map((item, index) => (
-                                <div key={index} className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
-                                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                    <span>{item}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Our Values */}
-            <section className="section-spacing bg-white">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-20 space-y-4">
-                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Our Core Values</h2>
-                        <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
-                            Principles that guide our daily operations and define the Mechatron identity.
-                        </p>
-                    </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {values.map((value, index) => {
-                            const Icon = value.icon;
-                            return (
-                                <Card key={index} className="hover-lift border-0 bg-slate-50 shadow-sm overflow-hidden group rounded-[2.5rem]">
-                                    <CardContent className="p-10 flex flex-col items-center text-center">
-                                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-8 shadow-premium group-hover:bg-primary group-hover:text-white transition-all duration-700">
-                                            <Icon className="h-10 w-10 transition-transform duration-700 group-hover:scale-110" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-primary transition-colors">{value.title}</h3>
-                                        <p className="text-sm text-slate-500 leading-relaxed font-medium">{value.description}</p>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
-
             {/* CTA Section */}
-            <section className="py-16 bg-primary text-primary-foreground">
-                <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            <section className="py-20 bg-primary text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-[100px] -ml-48 -mt-48"></div>
+                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-[100px] -mr-48 -mb-48"></div>
+                </div>
+                <div className="container mx-auto px-6 text-center relative z-10">
+                    <h2 className="text-4xl md:text-5xl font-black mb-8 tracking-tight">
                         Ready to Transform Your Business?
                     </h2>
-                    <p className="mb-8 opacity-90 max-w-xl mx-auto">
+                    <p className="mb-10 text-white/80 text-xl max-w-2xl mx-auto font-medium">
                         Let's discuss how we can help you achieve your goals with our engineering expertise 
                         and decades of experience in industrial automation.
                     </p>
-                    <a 
-                        href="/shop/contact" 
-                        className="inline-flex items-center justify-center px-8 py-3 bg-background text-foreground rounded-lg font-medium hover:bg-background/90 transition-colors"
-                    >
-                        Contact Us Today
-                    </a>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                        <a 
+                            href="/shop/contact" 
+                            className="inline-flex items-center justify-center px-10 py-4 bg-white text-primary rounded-full font-black text-lg hover:bg-slate-50 transition-all shadow-xl hover:scale-105"
+                        >
+                            Contact Us Today
+                        </a>
+                        <a 
+                            href="/shop/listing" 
+                            className="inline-flex items-center justify-center px-10 py-4 bg-primary-foreground/10 text-white border border-white/20 rounded-full font-black text-lg hover:bg-white/10 transition-all"
+                        >
+                            Browse Components
+                        </a>
+                    </div>
                 </div>
             </section>
         </div>
