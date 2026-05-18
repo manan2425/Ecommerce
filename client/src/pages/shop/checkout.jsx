@@ -198,8 +198,11 @@ export default function ShopCheckout() {
           </div>
 
           <div className="mt-4 w-full">
-            <Button className="w-full" onClick={() => handleInitiatePayment()}>
-              Checkout With PayPal
+            <div className="mb-4 p-3 bg-yellow-100 text-yellow-800 border border-yellow-200 rounded-md text-sm text-center font-medium">
+              Payment system is currently down for maintenance. We are updating our systems and will be back shortly.
+            </div>
+            <Button className="w-full opacity-50 cursor-not-allowed" disabled>
+              Checkout Temporarily Unavailable
             </Button>
           </div>
         </div>
