@@ -1,11 +1,18 @@
-
-import { Outlet } from "react-router-dom";
-
-
+import { Link, Outlet } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function AuthLayout() {
     return (
-        <div className="flex min-h-screen w-full bg-mesh">
+        <div className="flex min-h-screen w-full bg-mesh relative">
+            {/* Back to Home Button */}
+            <Link 
+                to="/shop/home" 
+                className="absolute top-6 left-6 z-50 flex items-center gap-2 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 backdrop-blur-md px-4 py-2 rounded-full transition-all text-sm font-medium border border-white/10"
+            >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Home
+            </Link>
+            
             {/* Cinematic Left Panel */}
             <div className="hidden lg:flex relative items-center justify-center w-1/2 overflow-hidden bg-slate-900 shadow-2xl">
                 {/* Dynamic Background Elements */}

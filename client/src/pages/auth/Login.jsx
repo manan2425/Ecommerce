@@ -17,7 +17,7 @@ export default function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { user, isLoading } = useSelector((state) => state.auth);
 
   const onSubmit = async (e) => {
     try {
@@ -80,6 +80,7 @@ export default function AuthLogin() {
           formData={formData}
           setFormData={setFormData}
           onSubmit={onSubmit}
+          isBtnDisabled={isLoading}
         />
         
         <div className="mt-6 flex justify-center">

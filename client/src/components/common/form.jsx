@@ -3,7 +3,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export default function CommonForm({formControls,formData,setFormData,onSubmit,buttonText,isBtnDisabled}) {
@@ -122,7 +122,10 @@ export default function CommonForm({formControls,formData,setFormData,onSubmit,b
 
             }
         </div>
-        <Button className="mt-2 w-full" type="submit" disabled={isBtnDisabled} >{buttonText || "Submit"}</Button>
+        <Button className="mt-2 w-full flex items-center justify-center gap-2" type="submit" disabled={isBtnDisabled}>
+            {isBtnDisabled && <Loader2 className="h-4 w-4 animate-spin" />}
+            {buttonText || "Submit"}
+        </Button>
     </form>
   )
 }
