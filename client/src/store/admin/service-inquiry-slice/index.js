@@ -1,18 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+import api from "@/lib/api";
 
 // Fetch all service inquiries
 export const fetchAllServiceInquiries = createAsyncThunk(
     "adminServiceInquiries/fetchAll",
     async ({ page = 1, limit = 10, status = "all", search = "", sortBy = "createdAt", sortOrder = "desc" }, { rejectWithValue }) => {
         try {
-            const response = await axios.get(
-                `${API_URL}/api/admin/service-inquiries`,
+            const response = await api.get(
+                "/admin/service-inquiries",
                 {
-                    params: { page, limit, status, search, sortBy, sortOrder },
-                    withCredentials: true
+                    params: { page, limit, status, search, sortBy, sortOrder }
                 }
             );
             return response.data;
@@ -27,9 +24,8 @@ export const fetchServiceInquiryById = createAsyncThunk(
     "adminServiceInquiries/fetchById",
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axios.get(
-                `${API_URL}/api/admin/service-inquiries/${id}`,
-                { withCredentials: true }
+            const response = await api.get(
+                `/admin/service-inquiries/${id}`
             );
             return response.data;
         } catch (error) {
@@ -43,10 +39,9 @@ export const updateServiceInquiryStatus = createAsyncThunk(
     "adminServiceInquiries/updateStatus",
     async ({ id, status, adminNotes }, { rejectWithValue }) => {
         try {
-            const response = await axios.put(
-                `${API_URL}/api/admin/service-inquiries/${id}`,
-                { status, adminNotes },
-                { withCredentials: true }
+            const response = await api.put(
+                `/admin/service-inquiries/${id}`,
+                { status, adminNotes }
             );
             return response.data;
         } catch (error) {
@@ -60,9 +55,8 @@ export const deleteServiceInquiry = createAsyncThunk(
     "adminServiceInquiries/delete",
     async (id, { rejectWithValue }) => {
         try {
-            const response = await axios.delete(
-                `${API_URL}/api/admin/service-inquiries/${id}`,
-                { withCredentials: true }
+            const response = await api.delete(
+                `/admin/service-inquiries/${id}`
             );
             return { ...response.data, id };
         } catch (error) {
@@ -76,10 +70,9 @@ export const bulkDeleteServiceInquiries = createAsyncThunk(
     "adminServiceInquiries/bulkDelete",
     async (ids, { rejectWithValue }) => {
         try {
-            const response = await axios.post(
-                `${API_URL}/api/admin/service-inquiries/bulk-delete`,
-                { ids },
-                { withCredentials: true }
+            const response = await api.post(
+                "/admin/service-inquiries/bulk-delete",
+                { ids }
             );
             return { ...response.data, ids };
         } catch (error) {

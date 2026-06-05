@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import api from "@/lib/api";
 import { fetchActiveServices } from "@/store/shop/service-slice";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -187,8 +187,8 @@ const ShopServices = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(
-                `${API_URL}/api/shop/service-inquiry/submit`,
+            const response = await api.post(
+                "/shop/service-inquiry/submit",
                 {
                     ...formData,
                     serviceId: selectedService._id

@@ -182,6 +182,7 @@ app.use("/api/admin/categories", adminCategoryRouter);
 app.use("/api/admin/contacts", adminContactRouter);
 app.use("/api/admin/services", adminServiceRouter);
 app.use("/api/admin/service-inquiry", adminServiceInquiryRouter);
+app.use("/api/admin/service-inquiries", adminServiceInquiryRouter);
 app.use("/api/admin/analytics", adminAnalyticsRouter);
 app.use("/api/admin/users", adminUserRouter);
 
@@ -196,6 +197,7 @@ app.use("/api/shop/categories", shopCategoryRouter);
 app.use("/api/shop/reviews", shopReviewRouter);
 app.use("/api/shop/services", shopServiceRouter);
 app.use("/api/shop/service-inquiry", shopServiceInquiryRouter);
+app.use("/api/shop/service-inquiries", shopServiceInquiryRouter);
 
 // MongoDB Connection
 // Removed and moved up

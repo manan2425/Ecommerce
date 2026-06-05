@@ -1,14 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+import api from "@/lib/api";
 
 // Search products
 export const searchProducts = createAsyncThunk(
     "shopSearch/searchProducts",
     async (searchQuery) => {
-        const response = await axios.get(
-            `${API_URL}/api/shop/products/search?q=${encodeURIComponent(searchQuery)}`
+        const response = await api.get(
+            `/shop/products/search?q=${encodeURIComponent(searchQuery)}`
         );
         return response.data;
     }
@@ -18,8 +16,8 @@ export const searchProducts = createAsyncThunk(
 export const getSearchSuggestions = createAsyncThunk(
     "shopSearch/getSuggestions",
     async (query) => {
-        const response = await axios.get(
-            `${API_URL}/api/shop/products/suggestions?q=${encodeURIComponent(query)}`
+        const response = await api.get(
+            `/shop/products/suggestions?q=${encodeURIComponent(query)}`
         );
         return response.data;
     }

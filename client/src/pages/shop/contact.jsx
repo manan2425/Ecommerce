@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { 
     MapPin, 
     Phone, 
@@ -95,8 +95,8 @@ const Contact = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await axios.post(
-                `${API_URL}/api/shop/contact/submit`,
+            const response = await api.post(
+                "/shop/contact/submit",
                 formData
             );
 
