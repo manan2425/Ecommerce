@@ -49,7 +49,7 @@ const Contact = () => {
         {
             icon: Phone,
             title: "Call Us",
-            details: ["Rushil Sevak: +91 78743 93297", "Anish Sharma: +91 89882 99522"]
+            details: ["Ronak Sevak: +91 99045 46898", "Technical Director: +91 75747 97654"]
         },
         {
             icon: Mail,
