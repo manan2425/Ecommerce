@@ -1,5 +1,4 @@
 import Address from "@/components/shop/address";
-import image from "../../assets/account.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import CartItemsContent from "@/components/shop/cart-items-content";
 import { Button } from "@/components/ui/button";
@@ -154,11 +153,17 @@ export default function ShopCheckout() {
 
   return (
     <div className="flex flex-col">
-      <div className="relative h-[300px] w-full overflow-hidden">
-        <img
-          src={image}
-          className="h-full w-full object-cover object-center"
-        />
+      <div className="relative h-[200px] w-full overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 flex items-center px-8 shadow-inner">
+        <div className="absolute inset-0 bg-mesh opacity-30"></div>
+        <div className="relative z-10 container mx-auto">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="h-1 w-12 bg-primary rounded-full"></div>
+            <span className="text-white/60 text-xs font-black uppercase tracking-[0.3em]">Checkout</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
+            Review Your <span className="text-primary font-light">Order</span>
+          </h1>
+        </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 p-5 ">
         <Address
