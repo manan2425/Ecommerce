@@ -2,8 +2,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import account from "../../assets/account_industrial.png";
 import Address from "@/components/shop/address";
 import ShoppingOrders from "@/components/shop/orders";
+import UserServiceInquiries from "@/components/shop/user-inquiries";
 import { useDispatch, useSelector } from "react-redux";
-import { User, Package, MapPin, Mail, ShieldCheck, Phone } from "lucide-react";
+import { User, Package, MapPin, Mail, ShieldCheck, Phone, MessageSquare } from "lucide-react";
 
 export default function ShopAccount() {
   const { user } = useSelector(state => state.auth);
@@ -80,7 +81,7 @@ export default function ShopAccount() {
                 <div className="bg-white/70 backdrop-blur-xl rounded-[3rem] shadow-premium border border-white/50 overflow-hidden min-h-[500px]">
                     <Tabs defaultValue="orders" className="w-full">
                         <div className="bg-slate-50/50 p-2 border-b border-slate-100">
-                            <TabsList className="grid w-full grid-cols-2 bg-transparent gap-2 h-auto">
+                            <TabsList className="grid w-full grid-cols-3 bg-transparent gap-2 h-auto">
                                 <TabsTrigger 
                                     value="orders" 
                                     className="data-[state=active]:bg-white data-[state=active]:shadow-premium rounded-2xl py-4 flex items-center gap-2 font-black uppercase tracking-widest text-[10px] transition-all"
@@ -95,6 +96,13 @@ export default function ShopAccount() {
                                     <MapPin className="h-4 w-4" />
                                     Saved Addresses
                                 </TabsTrigger>
+                                <TabsTrigger 
+                                    value="inquiries" 
+                                    className="data-[state=active]:bg-white data-[state=active]:shadow-premium rounded-2xl py-4 flex items-center gap-2 font-black uppercase tracking-widest text-[10px] transition-all"
+                                >
+                                    <MessageSquare className="h-4 w-4" />
+                                    Service Inquiries
+                                </TabsTrigger>
                             </TabsList>
                         </div>
                         <div className="p-8">
@@ -103,6 +111,9 @@ export default function ShopAccount() {
                             </TabsContent>
                             <TabsContent value="address" className="mt-0 focus-visible:outline-none">
                                 <Address />
+                            </TabsContent>
+                            <TabsContent value="inquiries" className="mt-0 focus-visible:outline-none">
+                                <UserServiceInquiries />
                             </TabsContent>
                         </div>
                     </Tabs>

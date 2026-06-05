@@ -108,9 +108,12 @@ const serviceInquirySlice = createSlice({
         },
         // Real-time updates from socket
         addNewInquiry: (state, action) => {
-            state.inquiries.unshift(action.payload);
-            state.stats.total += 1;
-            state.stats.new += 1;
+            const exists = state.inquiries.some(i => i._id === action.payload._id);
+            if (!exists) {
+                state.inquiries.unshift(action.payload);
+                state.stats.total += 1;
+                state.stats.new += 1;
+            }
         },
         updateInquiryInList: (state, action) => {
             const index = state.inquiries.findIndex(i => i._id === action.payload._id);

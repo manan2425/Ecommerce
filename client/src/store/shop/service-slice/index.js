@@ -5,6 +5,7 @@ const initialState = {
     isLoading: false,
     serviceList: [],
     serviceDetails: null,
+    userInquiries: [],
     error: null
 };
 
@@ -33,6 +34,20 @@ export const fetchServiceDetails = createAsyncThunk(
             return response.data;
         } catch (error) {
             console.log(error);
+            throw error;
+        }
+    }
+);
+
+// Fetch user's service inquiries
+export const fetchUserServiceInquiries = createAsyncThunk(
+    "shopServices/fetchUserInquiries",
+    async (email) => {
+        try {
+            const response = await api.get(`/shop/service-inquiry/user/${encodeURIComponent(email)}`);
+            return response.data;
+        } catch (error) {
+            console.log("Error fetching user inquiries:", error);
             throw error;
         }
     }
@@ -76,6 +91,18 @@ const shopServiceSlice = createSlice({
                 state.serviceDetails = action.payload.data;
             })
             .addCase(fetchServiceDetails.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message;
+            })
+            // Fetch user's service inquiries
+            .addCase(fetchUserServiceInquiries.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchUserServiceInquiries.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.userInquiries = action.payload.data || [];
+            })
+            .addCase(fetchUserServiceInquiries.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.error.message;
             });

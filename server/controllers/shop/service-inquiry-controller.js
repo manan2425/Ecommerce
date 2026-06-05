@@ -75,3 +75,31 @@ export const submitServiceInquiry = async (req, res) => {
         });
     }
 };
+
+// Get service inquiries submitted by user email
+export const getUserServiceInquiries = async (req, res) => {
+    try {
+        const { email } = req.params;
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required"
+            });
+        }
+
+        const inquiries = await ServiceInquiry.find({ email: email.toLowerCase() })
+            .populate("service", "title category price image")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: inquiries
+        });
+    } catch (error) {
+        console.error("Error fetching user service inquiries:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch inquiries. Please try again."
+        });
+    }
+};
