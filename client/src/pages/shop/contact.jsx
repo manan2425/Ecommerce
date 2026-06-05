@@ -54,7 +54,7 @@ const Contact = () => {
         {
             icon: Mail,
             title: "Email Us",
-            details: ["mtronapp@gmail.com"]
+            details: ["info@mechatronsolutions.in"]
         },
         {
             icon: Clock,
@@ -335,15 +335,15 @@ const Contact = () => {
                                     <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                                         <Phone className="h-5 w-5 text-primary" />
                                         <div>
-                                            <p className="text-sm text-muted-foreground">For Sales Inquiries</p>
-                                            <p className="font-medium">+91 98765 43210</p>
+                                            <p className="text-sm text-muted-foreground">Technical Director</p>
+                                            <p className="font-medium">+91 75747 97654</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                                         <Mail className="h-5 w-5 text-primary" />
                                         <div>
-                                            <p className="text-sm text-muted-foreground">For Technical Support</p>
-                                            <p className="font-medium">support@company.com</p>
+                                            <p className="text-sm text-muted-foreground">General Email</p>
+                                            <p className="font-medium">info@mechatronsolutions.in</p>
                                         </div>
                                     </div>
                                     <div className="text-center pt-2">
