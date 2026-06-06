@@ -172,7 +172,15 @@ export const editProduct = async (req, res) => {
         }
 
         // Validate input fields
-        if (!title || !description || !category || !brand || !price || !salePrice || !totalStock) {
+        if (
+            !title || 
+            !description || 
+            !category || 
+            !brand || 
+            (price === undefined || price === "") || 
+            (salePrice === undefined || salePrice === "") || 
+            (totalStock === undefined || totalStock === "")
+        ) {
             return res.status(400).json({
                 message: "All fields are required.",
                 success: false
