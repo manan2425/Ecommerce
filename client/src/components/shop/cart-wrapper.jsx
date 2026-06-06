@@ -55,7 +55,7 @@ export default function CartWrapper({cartItems,setOpenCartSheet}) {
             <div className="mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0 z-10 pb-4">
               <div className="flex justify-between mb-4">
                   <span className="font-bold text-slate-500">Total Amount:</span>
-                  <span className="font-bold text-lg text-slate-900">${totalCartAmount.toFixed(2)}</span>
+                  <span className="font-bold text-lg text-slate-900">₹{totalCartAmount.toFixed(2)}</span>
               </div>
               <Button className="w-full" size="lg" onClick={handleCheckout}>
                   Proceed to Checkout

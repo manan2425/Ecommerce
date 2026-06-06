@@ -43,11 +43,11 @@ export default function ShppingProductTile({ product, handleGetProductDetails, h
                 <div className="flex items-end gap-3">
                     {product?.salePrice > 0 ? (
                         <>
-                            <span className="text-2xl font-black text-primary">${product?.salePrice}</span>
-                            <span className="text-sm font-medium text-slate-300 line-through mb-1">${product?.price}</span>
+                            <span className="text-2xl font-black text-primary">₹{product?.salePrice}</span>
+                            <span className="text-sm font-medium text-slate-300 line-through mb-1">₹{product?.price}</span>
                         </>
                     ) : (
-                        <span className="text-2xl font-black text-primary">${product?.price}</span>
+                        <span className="text-2xl font-black text-primary">₹{product?.price}</span>
                     )}
                 </div>
             </CardContent>

@@ -107,7 +107,7 @@ export default function ShoppingOrders() {
                       {item?.orderStatus || ""}
                     </span>
                   </TableCell>
-                  <TableCell>${item?.totalAmount?.toFixed(2) || ""}</TableCell>
+                  <TableCell>₹{item?.totalAmount?.toFixed(2) || ""}</TableCell>
                   <TableCell>
                     <Dialog open={openDetailsDialog} onOpenChange = {()=>{
                       setOpenDetailsDialog(false);

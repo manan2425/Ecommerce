@@ -186,19 +186,19 @@ export default function ShopCheckout() {
             {/* Subtotal */}
             <div className="flex justify-between py-2 border-b">
               <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">$ {subtotal.toFixed(2)}</span>
+              <span className="font-medium">₹ {subtotal.toFixed(2)}</span>
             </div>
             
             {/* GST */}
             <div className="flex justify-between py-2 border-b">
               <span className="text-gray-600">GST (18%)</span>
-              <span className="font-medium text-orange-600">+ $ {gstAmount.toFixed(2)}</span>
+              <span className="font-medium text-orange-600">+ ₹ {gstAmount.toFixed(2)}</span>
             </div>
             
             {/* Grand Total */}
             <div className="flex justify-between py-3 mt-2">
               <span className="font-bold text-lg">Grand Total</span>
-              <span className="font-bold text-lg text-green-600">$ {grandTotal.toFixed(2)}</span>
+              <span className="font-bold text-lg text-green-600">₹ {grandTotal.toFixed(2)}</span>
             </div>
           </div>
 

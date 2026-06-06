@@ -169,7 +169,7 @@ export default function PartsManagement({ product, onSave, isOpen, onClose }) {
                         {part.price > 0 && (
                           <div>
                             <span className="text-gray-600">Price:</span>
-                            <p className="font-bold">${part.price}</p>
+                            <p className="font-bold">₹{part.price}</p>
                           </div>
                         )}
                         {hasSubparts && (

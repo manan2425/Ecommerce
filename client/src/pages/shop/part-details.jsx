@@ -372,7 +372,7 @@ export default function PartDetailsPage() {
                                         <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50">
                                             <div className="bg-black/90 text-white text-sm px-3 py-2 rounded whitespace-nowrap">
                                                 {subpart.name || `Sub-part ${idx + 1}`}
-                                                {subpart.price > 0 && <span className="text-green-400 ml-2">${subpart.price}</span>}
+                                                {subpart.price > 0 && <span className="text-green-400 ml-2">₹{subpart.price}</span>}
                                             </div>
                                         </div>
 
@@ -451,7 +451,7 @@ export default function PartDetailsPage() {
                             <div className="flex items-center justify-between mb-6">
                                 {currentPart.price > 0 && (
                                     <div className="text-4xl font-bold text-green-400">
-                                        ${currentPart.price}
+                                        ₹{currentPart.price}
                                     </div>
                                 )}
                                 {currentPart.quantity > 0 && (
@@ -485,7 +485,7 @@ export default function PartDetailsPage() {
                                         </div>
                                         <span className="text-xl text-white">
                                             Total: <span className="font-bold text-green-400">
-                                                ${(currentPart.price * quantity).toFixed(2)}
+                                                ₹{(currentPart.price * quantity).toFixed(2)}
                                             </span>
                                         </span>
                                     </div>
@@ -547,7 +547,7 @@ export default function PartDetailsPage() {
                                                     </div>
                                                     {subpart.price > 0 && (
                                                         <div className="text-green-400 font-bold text-lg">
-                                                            ${subpart.price}
+                                                            ₹{subpart.price}
                                                         </div>
                                                     )}
                                                     <ChevronRight className="w-5 h-5 text-gray-500" />
@@ -599,7 +599,7 @@ export default function PartDetailsPage() {
                                                             }}
                                                         >
                                                             <ShoppingCart className="w-4 h-4 mr-2" />
-                                                            Add to Cart - ${subpart.price}
+                                                            Add to Cart - ₹{subpart.price}
                                                         </Button>
                                                     </div>
                                                 )}

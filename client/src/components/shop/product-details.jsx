@@ -327,11 +327,11 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
 
                             <div className="flex items-center justify-between mt-8">
                                 <p className={`text-4xl font-black text-primary ${productDetails?.salePrice > 0 ? "line-through text-slate-300 text-2xl" : ""}`}>
-                                    ${productDetails?.price || "0.00"}
+                                    ₹{productDetails?.price || "0.00"}
                                 </p>
                                 {(productDetails?.salePrice > 0 && productDetails?.salePrice < productDetails?.price) && (
                                     <p className='text-2xl font-bold text-muted-foreground'>
-                                        ${productDetails?.salePrice || 'Sale Price'}
+                                        ₹{productDetails?.salePrice || 'Sale Price'}
                                     </p>
                                 )}
                             </div>
@@ -353,7 +353,7 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
                                                                 <div className="text-sm text-muted-foreground">{p.description}</div>
                                                             </div>
                                                         </div>
-                                                        <div className="font-bold">{p.price ? `$${p.price}` : ''}</div>
+                                                        <div className="font-bold">{p.price ? `₹${p.price}` : ''}</div>
                                                     </div>
                                                 </div>
                                             ))}
@@ -376,7 +376,7 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
 
                                 <div className="mb-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
                                     <div className="text-sm text-muted-foreground mb-1">Total Price</div>
-                                    <div className="text-3xl font-bold text-primary">${(effectivePrice * quantity).toFixed(2)}</div>
+                                    <div className="text-3xl font-bold text-primary">₹{(effectivePrice * quantity).toFixed(2)}</div>
                                     {selectedVariant && (
                                         <div className="mt-2 text-xs text-muted-foreground">
                                             Variant: {Object.entries(selectedOptions).map(([k, v]) => `${k}: ${v}`).join(', ')}
@@ -394,7 +394,7 @@ export default function ProductDetailsModal({ open, setOpen, productDetails, han
                                                     className="w-4 h-4"
                                                 />
                                                 <label htmlFor="buyWithProduct" className="text-sm font-medium cursor-pointer">
-                                                    Buy with main product (+${(Number(productDetails?.salePrice > 0 ? productDetails.salePrice : productDetails?.price) || 0).toFixed(2)})
+                                                    Buy with main product (+₹{(Number(productDetails?.salePrice > 0 ? productDetails.salePrice : productDetails?.price) || 0).toFixed(2)})
                                                 </label>
                                             </div>
                                         </div>

@@ -103,7 +103,7 @@ export default function AdminOrders() {
       return `<tr>
         <td style="border: 1px solid #ddd; padding: 8px;">${itemName}</td>
         <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${item.quantity}</td>
-        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹${itemPrice}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">₹{itemPrice}</td>
       </tr>`;
     }).join('') || '';
 

@@ -222,15 +222,15 @@ export default function SearchPage() {
                     {product.salePrice > 0 && product.salePrice < product.price ? (
                       <>
                         <span className="text-lg font-bold text-primary">
-                          ${product.salePrice}
+                          ₹{product.salePrice}
                         </span>
                         <span className="text-sm text-gray-400 line-through">
-                          ${product.price}
+                          ₹{product.price}
                         </span>
                       </>
                     ) : (
                       <span className="text-lg font-bold text-primary">
-                        ${product.price}
+                        ₹{product.price}
                       </span>
                     )}
                   </div>

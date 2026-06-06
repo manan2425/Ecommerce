@@ -69,9 +69,9 @@ export default function AdminDashboard() {
       // 1. Summary Sheet
       const summaryData = [
         ["Metric", "Value"],
-        ["Total Revenue", `$${totalRevenue.toFixed(2)}`],
-        ["Monthly Revenue", `$${monthlyRevenue.toFixed(2)}`],
-        ["Weekly Revenue", `$${weeklyRevenue.toFixed(2)}`],
+        ["Total Revenue", `₹${totalRevenue.toFixed(2)}`],
+        ["Monthly Revenue", `₹${monthlyRevenue.toFixed(2)}`],
+        ["Weekly Revenue", `₹${weeklyRevenue.toFixed(2)}`],
         ["Total Orders", totalOrders],
         ["Total Products", totalProducts],
         ["Total Stock", totalStock],
@@ -88,7 +88,7 @@ export default function AdminDashboard() {
         "Order ID": order._id,
         "Date": new Date(order.orderDate).toLocaleDateString(),
         "Status": order.orderStatus,
-        "Total Amount": `$${order.totalAmount}`,
+        "Total Amount": `₹${order.totalAmount}`,
         "Payment Method": order.paymentMethod,
         "Payment Status": order.paymentStatus,
       })) || [];
@@ -101,8 +101,8 @@ export default function AdminDashboard() {
         "Title": product.title,
         "Category": product.category,
         "Brand": product.brand,
-        "Price": `$${product.price}`,
-        "Sale Price": `$${product.salePrice}`,
+        "Price": `₹${product.price}`,
+        "Sale Price": `₹${product.salePrice}`,
         "Total Stock": product.totalStock,
       })) || [];
       const productsSheet = XLSX.utils.json_to_sheet(productsData);
@@ -132,7 +132,7 @@ export default function AdminDashboard() {
             <DollarSign className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground">${totalRevenue.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-foreground">₹{totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground mt-1">
               Lifetime revenue
             </p>
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                       <TableCell className={statusColor(order.orderStatus)}>
                         {order.orderStatus}
                       </TableCell>
-                      <TableCell className="font-bold">${order.totalAmount}</TableCell>
+                      <TableCell className="font-bold">₹{order.totalAmount}</TableCell>
                     </TableRow>
                   ))
                 ) : (

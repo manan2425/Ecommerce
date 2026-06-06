@@ -77,9 +77,9 @@ export default function ProductTile({ product, onEdit, onOpenBuilder, onPartsSav
                         {product?.title || "title"}
                     </h2>
                     <div className="flex justify-between items-center mb-2">
-                        <span className={` ${(product?.salePrice>0 &&  product?.salePrice<product?.price) ? 'line-through': ''}  text-lg font-semibold text-primary`}>${product?.price || "price"}</span>
+                        <span className={` ${(product?.salePrice>0 &&  product?.salePrice<product?.price) ? 'line-through': ''}  text-lg font-semibold text-primary`}>₹{product?.price || "price"}</span>
                         {
-                            (product?.salePrice>0  &&  product?.salePrice<product?.price) && <span className="text-lg font-bold">${product?.salePrice || "sale price"}</span>
+                            (product?.salePrice>0  &&  product?.salePrice<product?.price) && <span className="text-lg font-bold">₹{product?.salePrice || "sale price"}</span>
                         }
                     </div>
                     

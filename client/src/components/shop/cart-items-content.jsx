@@ -101,7 +101,7 @@ export default function CartItemsContent({ cartItem, totalCartAmount }) {
             {/* Show price */}
             {cartItem?.selectedPart?.price > 0 && (
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
-                ${cartItem.selectedPart.price}
+                ₹{cartItem.selectedPart.price}
               </span>
             )}
             {/* Show depth level if nested */}

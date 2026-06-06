@@ -207,7 +207,7 @@ export default function HierarchicalProductExplorer({ product, onAddToCart }) {
 
           {/* Price */}
           <div className="text-2xl font-bold text-primary">
-            ${currentData.salePrice && currentData.salePrice > 0
+            ₹{currentData.salePrice && currentData.salePrice > 0
               ? currentData.salePrice
               : currentData.price}
           </div>
@@ -294,7 +294,7 @@ export default function HierarchicalProductExplorer({ product, onAddToCart }) {
                         </div>
                         <div className="text-right ml-2">
                           {part.price > 0 && (
-                            <p className="font-semibold text-sm">${part.price}</p>
+                            <p className="font-semibold text-sm">₹{part.price}</p>
                           )}
                           {part.subparts && part.subparts.length > 0 && (
                             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">

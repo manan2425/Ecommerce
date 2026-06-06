@@ -250,7 +250,7 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
                                             <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-50">
                                                 <div className="bg-black/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
                                                     {part.name || `Part ${idx + 1}`}
-                                                    {part.price > 0 && ` - $${part.price}`}
+                                                    {part.price > 0 && ` - ₹${part.price}`}
                                                 </div>
                                             </div>
 
@@ -348,7 +348,7 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
                                                             )}
                                                             {part.price > 0 && (
                                                                 <div className="text-green-400 font-semibold text-sm mt-1">
-                                                                    ${part.price}
+                                                                    ₹{part.price}
                                                                 </div>
                                                             )}
                                                         </div>
@@ -414,7 +414,7 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
                                 <div className="flex items-center justify-between mb-4">
                                     {selectedPart.price > 0 && (
                                         <div className="text-3xl font-bold text-green-600">
-                                            ${selectedPart.price}
+                                            ₹{selectedPart.price}
                                         </div>
                                     )}
                                     {selectedPart.quantity > 0 && (
@@ -445,7 +445,7 @@ export default function VisualPartsViewer({ open, onClose, productDetails, handl
                                         </div>
                                         <span className="text-gray-600">
                                             Total: <span className="font-bold text-green-600">
-                                                ${(selectedPart.price * quantity).toFixed(2)}
+                                                ₹{(selectedPart.price * quantity).toFixed(2)}
                                             </span>
                                         </span>
                                     </div>

@@ -75,18 +75,18 @@ export default function ShopOrdersView({ orderDetails }) {
                     <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
                         <div className="flex items-center justify-between py-1">
                             <p className="text-gray-600">Subtotal</p>
-                            <Label>${orderDetails?.subtotal?.toFixed(2) || orderDetails?.totalAmount || ""}</Label>
+                            <Label>₹{orderDetails?.subtotal?.toFixed(2) || orderDetails?.totalAmount || ""}</Label>
                         </div>
                         {orderDetails?.gstAmount > 0 && (
                             <div className="flex items-center justify-between py-1">
                                 <p className="text-gray-600">GST (18%)</p>
-                                <Label className="text-orange-600">+ ${orderDetails?.gstAmount?.toFixed(2)}</Label>
+                                <Label className="text-orange-600">+ ₹{orderDetails?.gstAmount?.toFixed(2)}</Label>
                             </div>
                         )}
                         <div className="flex items-center justify-between py-1 pt-2 border-t mt-2">
                             <p className="font-bold">Total Amount</p>
                             <Label className="text-green-600 font-bold">
-                                ${orderDetails?.totalAmount?.toFixed(2) || ""}
+                                ₹{orderDetails?.totalAmount?.toFixed(2) || ""}
                             </Label>
                         </div>
                     </div>
@@ -102,7 +102,7 @@ export default function ShopOrdersView({ orderDetails }) {
                                     <li className="flex flex-col gap-1 p-3 bg-gray-50 rounded-lg" key={index}>
                                         <div className="flex items-center justify-between">
                                             <span className="font-medium">{item?.title || ""}</span>
-                                            <span className="font-semibold">${(item?.price * item?.quantity) || ""}</span>
+                                            <span className="font-semibold">₹{(item?.price * item?.quantity) || ""}</span>
                                         </div>
                                         
                                         {/* Show selected options (Color, Size, etc.) */}
@@ -127,7 +127,7 @@ export default function ShopOrdersView({ orderDetails }) {
                                                 )}
                                                 <div>
                                                     <strong>Part:</strong> {item.selectedPart.name}
-                                                    {item.selectedPart.price > 0 && ` · $${item.selectedPart.price}`}
+                                                    {item.selectedPart.price > 0 && ` · ₹${item.selectedPart.price}`}
                                                     {item.selectedPart.depth > 0 && (
                                                         <span className="text-xs text-gray-500 ml-1">
                                                             (Level {item.selectedPart.depth + 1})

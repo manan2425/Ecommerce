@@ -253,7 +253,7 @@ export default function ProductImageUpload({ imageFile, setImageFile, uploadedIm
                                                             <div style={{ position: 'absolute', top: '32px', left: '-50px', width: 160, background: '#0b1220', color: '#fff', padding: 6, borderRadius: 6, boxShadow: '0 3px 8px rgba(0,0,0,0.3)' }}>
                                                                 <div style={{ fontWeight: 700 }}>{p.name}</div>
                                                                 <div style={{ fontSize: 12, opacity: 0.9 }}>{p.description}</div>
-                                                                <div style={{ fontSize: 12, marginTop: 4 }}> ${p.price?.toFixed(2) || '0.00'}</div>
+                                                                <div style={{ fontSize: 12, marginTop: 4 }}> ₹{p.price?.toFixed(2) || '0.00'}</div>
                                                                 <div style={{ marginTop: 6 }}><button className="text-xs" onClick={(e) => { e.stopPropagation(); removeHotspotAt(idx); }}>Remove</button></div>
                                                             </div>
                                                         </div>
