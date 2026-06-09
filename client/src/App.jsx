@@ -92,7 +92,7 @@ function App() {
               ? (user?.role === 'admin' 
                   ? <Navigate to="/admin/dashboard" replace /> 
                   : <Navigate to="/shop/home" replace />)
-              : <Navigate to="/shop/home" replace />
+              : <Navigate to="/auth/login" replace />
           } />
 
           <Route path="/auth" element={
