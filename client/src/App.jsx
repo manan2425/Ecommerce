@@ -124,11 +124,11 @@ function App() {
             <Route path="user-activities" element={<AdminUserActivities />} />
           </Route>
 
-          {/* Public Shop Routes - can access without authentication */}
+          {/* Shop Routes - requires authentication */}
           <Route path="/shop" element={
-            <CheckAuthPublic isAuthenticated={isAuthenticated} user={user}>
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
               <ShopLayout />
-            </CheckAuthPublic>}
+            </CheckAuth>}
           >
             <Route path="home" element={<ShopHome />} />
             <Route path="listing" element={<ShopList />} />
