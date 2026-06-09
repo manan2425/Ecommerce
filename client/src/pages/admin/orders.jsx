@@ -136,6 +136,7 @@ export default function AdminOrders() {
             <p><strong>Status:</strong> ${order.orderStatus}</p>
             <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
             <p><strong>Payment Status:</strong> ${order.paymentStatus}</p>
+            ${order.ewayBillNumber ? `<p><strong>E-Way Bill No:</strong> ${order.ewayBillNumber}</p>` : ''}
           </div>
 
           <div class="section">

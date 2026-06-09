@@ -236,3 +236,61 @@ export const cancelOrder = async(req,res)=>{
         })
     }
 }
+
+export const generateEwayBill = async(req,res)=>{
+    try{
+        const {id} = req.params;
+        const order = await Order.findById(id);
+        if(!order){
+            return res.status(404).json({
+                success : false,
+                message : "Order Not Found"
+            })
+        }
+
+        if(order.ewayBillNumber){
+            return res.status(400).json({
+                success : false,
+                message : "E-Way Bill already generated for this order"
+            })
+        }
+
+        // --- MOCK API INTEGRATION ---
+        // Simulate an API call delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // Generate a mock E-way bill number
+        const mockEwayBillNumber = `EWB${Math.floor(1000000000 + Math.random() * 9000000000)}`;
+        
+        order.ewayBillNumber = mockEwayBillNumber;
+        order.ewayBillGeneratedAt = new Date();
+        order.ewayBillDetails = {
+            provider: "Mock API",
+            status: "Generated",
+            validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000) // Valid for 1 day mock
+        };
+
+        await order.save();
+
+        // Emit real-time event for order update
+        emitEvent(SOCKET_EVENTS.ORDER_UPDATED, { orderId: id, orderStatus: order.orderStatus, ewayBillNumber: order.ewayBillNumber });
+        emitEvent(SOCKET_EVENTS.REFRESH_ORDERS, { action: 'updated', orderId: id });
+
+        return res.status(200).json({
+            success : true,
+            message : 'E-Way Bill Generated Successfully',
+            data: {
+                ewayBillNumber: order.ewayBillNumber,
+                ewayBillGeneratedAt: order.ewayBillGeneratedAt,
+                ewayBillDetails: order.ewayBillDetails
+            }
+        })
+
+    }catch(error){
+        console.log("Error generating E-Way Bill:", error);
+        return res.status(500).json({
+            success : false,
+            message : "Failed to generate E-Way Bill"
+        })
+    }
+}

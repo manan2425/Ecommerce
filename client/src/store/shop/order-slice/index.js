@@ -74,6 +74,15 @@ export const cancelOrder = createAsyncThunk("/order/cancelOrder",async(id)=>{
     }
 })
 
+export const generateEwayBill = createAsyncThunk("/order/generateEwayBill",async(id, { rejectWithValue })=>{
+    try{
+        const response = await api.post(`/shop/order/generate-eway-bill/${id}`);
+        return response.data;
+    }catch(error){
+        console.log(error);
+        return rejectWithValue(error.response?.data || { message: "Failed to generate E-Way Bill" });
+    }
+})
 
 const shoppingOrderSlice = createSlice({
     name : 'shoppingOrderSlice',
@@ -137,6 +146,15 @@ const shoppingOrderSlice = createSlice({
             state.isLoading = false;
         })
         .addCase(updateOrderStatus.rejected,(state)=>{
+            state.isLoading = false;
+        })
+        .addCase(generateEwayBill.pending,(state)=>{
+            state.isLoading = true;
+        })
+        .addCase(generateEwayBill.fulfilled,(state)=>{
+            state.isLoading = false;
+        })
+        .addCase(generateEwayBill.rejected,(state)=>{
             state.isLoading = false;
         })
     }

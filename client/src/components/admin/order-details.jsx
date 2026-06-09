@@ -2,10 +2,11 @@ import CommonForm from "@/components/common/form";
 import { DialogContent, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { getAllOrders, resetOrderDetails, updateOrderStatus } from "@/store/shop/order-slice";
+import { getAllOrders, resetOrderDetails, updateOrderStatus, generateEwayBill } from "@/store/shop/order-slice";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 export default function AdminOrderDetailsView({ orderDetails, setOpenDetailsDialog }) {
     // console.log("Order Details : ",orderDetails);
@@ -65,6 +66,35 @@ export default function AdminOrderDetailsView({ orderDetails, setOpenDetailsDial
         }
     }
 
+    const handleGenerateEwayBill = async () => {
+        const id = orderDetails?._id;
+        if (!id) return;
+
+        setIsUpdating(true);
+        try {
+            await dispatch(generateEwayBill(id)).unwrap();
+            
+            toast({
+                title: "Success",
+                description: "E-Way Bill generated successfully"
+            });
+            
+            // Close the dialog and refresh orders to show new data
+            setOpenDetailsDialog(false);
+            dispatch(getAllOrders());
+            
+        } catch (error) {
+            console.log(error);
+            toast({
+                title: "Error",
+                description: error?.message || "Failed to generate E-Way Bill",
+                variant: "destructive"
+            });
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
     return (
         <DialogContent className="productModal sm:max-w-[600px] h-[95%] overflow-y-scroll">
             <div className="sr-only">
@@ -108,6 +138,29 @@ export default function AdminOrderDetailsView({ orderDetails, setOpenDetailsDial
                         <Label>
                             {orderDetails?.totalAmount || ''}
                         </Label>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-2">
+                        <p className="font-medium">
+                            E-Way Bill
+                        </p>
+                        <div className="flex items-center gap-2">
+                            {orderDetails?.ewayBillNumber ? (
+                                <Label className="font-bold text-green-600">
+                                    {orderDetails.ewayBillNumber}
+                                </Label>
+                            ) : (
+                                <Button 
+                                    size="sm" 
+                                    onClick={handleGenerateEwayBill} 
+                                    disabled={isUpdating}
+                                    variant="outline"
+                                    className="border-primary text-primary hover:bg-primary hover:text-white"
+                                >
+                                    {isUpdating ? "Generating..." : "Generate E-Way Bill"}
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     <Separator />

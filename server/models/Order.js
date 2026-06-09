@@ -63,6 +63,9 @@ const OrderSchema  = new mongoose.Schema({
     orderUpdateDate : Date,
     paymentId : String,
     payerId : String,
+    ewayBillNumber: String,
+    ewayBillGeneratedAt: Date,
+    ewayBillDetails: mongoose.Schema.Types.Mixed,
 });
 
 const Order = mongoose.model('Order', OrderSchema);
